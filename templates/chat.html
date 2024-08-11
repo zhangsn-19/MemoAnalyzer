@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .memory-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        mark {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
+        body {
+            background-color: #f4f4f4;
+        }
+        #chat-container {
+            display: flex;
+            margin: 50px auto;
+            max-width: 80%;
+        }
+        #chat-list {
+            width: 20%;
+            margin-right: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+        #chat-box {
+            width: 80%;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            padding: 10px;
+            position: relative; /* 为浮动框提供相对定位 */
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            max-width: 75%;
+            position: relative;
+        }
+        .message.user {
+            background-color: #dcf8c6;
+            margin-left: auto;
+            text-align: left;
+        }
+        .message.assistant {
+            background-color: #f1f0f0;
+            text-align: left;
+        }
+        #message-form {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        #message-form input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #message-form button {
+            width: 15%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        .chat-link {
+            display: block;
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #000;
+        }
+        .chat-link:hover {
+            background-color: #e2e6ea;
+        }
+        .active-chat {
+            background-color: #28a745;
+            color: #fff;
+        }
+        /* 浮动框样式 */
+        #plugin-container {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 300px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            padding: 15px;
+        }
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+<body>
+    <div id="plugin-container" style="display:none; position:fixed; top:50px; right:50px; width:300px; padding:20px; background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">
+        <!-- Memory Generation Stage -->
+        <div id="memory-stage">
+            <h5>Memory Generation Stage</h5>
+            <p>Phrase: <div id="phrase" contenteditable="true" style="border: 1px solid #ccc; padding: 5px; border-radius: 5px;"></div></p>
+            
+            <p>Original Text: <span id="original-text"></span></p>
+            
+            <!-- Confidence 显示为百分比条 -->
+            <p>Confidence: <div id="confidence-bar" style="width: 100%; background-color: #f1f1f1; border-radius: 5px; height: 20px;">
+                <div id="confidence" style="height: 100%; background-color: #28a745; border-radius: 5px; width: 0%;"></div>
+            </div></p>
+            <button id="view-reasoning" class="btn btn-info">View Reasoning</button>
+            <button id="add-memory" class="btn btn-success">Add to Memory Bank</button>
+            <button id="close-plugin" class="btn btn-danger">Close</button>
+        </div>
+    </div>
+    <div id="chat-container">
+        <div id="chat-list">
+            <h4>Chats</h4>
+            {% for chat in chat_list %}
+            <a href="{{ url_for('chat', chat_name=chat) }}" 
+               class="chat-link {% if selected_chat == chat %}active-chat{% endif %}">
+                {{ chat }}
+            </a>
+            {% endfor %}
+            <form method="POST">
+                <input type="text" name="new_chat_name" placeholder="New chat name" class="form-control my-2" required>
+                <button type="submit" class="btn btn-primary btn-block">Start New Chat</button>
+            </form>
+        </div>        
+        <div id="chat-box" style="min-height: 300px;">
+            <h4>{{ selected_chat }}</h4>
+            <div id="messages">
+                {% for conversation in conversations %}
+                <div class="message {% if conversation.startswith('assistant:') %}assistant{% else %}user{% endif %}">
+                    {{ conversation.split(': ', 1)[1] }}
+                </div>
+                {% endfor %}
+            </div>
+            <form id="message-form">
+                <input type="hidden" name="chat_name" value="{{ selected_chat }}">
+                <input type="text" name="message" placeholder="Type your message..." required>
+                <!-- 将 type 从 submit 改为 button -->
+                <button type="button" id="send-button">Send</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // MathJax 渲染
+        function displayMemoryItems(memorySuggestions) {
+            let phraseDiv = document.getElementById('phrase');
+            let confidenceBar = document.getElementById('confidence');
+            
+            // 假设只显示第一个记忆条目的内容
+            if (memorySuggestions.length > 0) {
+                const memoryItem = memorySuggestions[0];
+                
+                // 设置 Phrase 可编辑 div 的内容
+                phraseDiv.innerText = memoryItem.memoryText;
+                
+                // 设置 Confidence 百分比条
+                confidenceBar.style.width = memoryItem.confidence + '%';
+            }
+        }
+
+        // 高亮文本
+        function highlightOriginalText(memorySuggestions) {
+            let messageInput = document.querySelector('input[name="message"]');
+            let originalText = messageInput.value;
+
+            memorySuggestions.forEach(item => {
+                let regex = new RegExp(`(${item.originalText})`, 'gi');
+                originalText = originalText.replace(regex, `<mark>$1</mark>`);
+            });
+
+            messageInput.innerHTML = originalText;
+        }
+
+        document.getElementById('send-button').onclick = function(event) {
+            console.log("Send button clicked.");
+            event.preventDefault(); // 阻止表单默认提交
+
+            const messageInput = document.querySelector('input[name="message"]');
+            const message = messageInput.value;
+
+            // 调用 memory_evaluation 接口
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "{{ url_for('memory_evaluation') }}", true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log("Received memory evaluation response.");
+                    const response = JSON.parse(xhr.responseText);
+                    const memorySuggestions = response.memory_suggestions;  // 假设这是个数组
+
+                    // 显示多个记忆条目
+                    displayMemoryItems(memorySuggestions);
+                    highlightOriginalText(memorySuggestions);
+
+                    // 显示插件
+                    document.getElementById('plugin-container').style.display = 'block';
+
+                    // 清空输入框
+                    messageInput.value = '';
+                }
+            };
+            xhr.send(`message=${encodeURIComponent(message)}`);
+        };
+        // 双击修改原始文本
+        function modifyOriginalText(index) {
+            const messageInput = document.querySelector('input[name="message"]');
+            const newText = prompt("Modify the text:", messageInput.value);
+
+            if (newText) {
+                // 更新用户输入框中的文本
+                messageInput.value = newText;
+
+                // 更新后台的记忆信息
+                memorySuggestions[index].originalText = newText;
+            }
+        }
+
+        document.getElementById('close-plugin').onclick = function() {
+            // 隐藏插件并发送最终请求
+            document.getElementById('plugin-container').style.display = 'none';
+            sendFinalChat(document.querySelector('input[name="message"]').value);
+        };
+
+    </script>
+</body>
+</html>

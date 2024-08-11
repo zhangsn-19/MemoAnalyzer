@@ -1,0 +1,25 @@
+1723351441.6399534
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': 'I have a new chatting'}
+That’s great! What would you like to chat about today?
+======================================== query 
+1723351468.6691303
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': 'I would like to chat about you, and you, and you'}
+Sure, I'd be happy to chat! When you say "you," are you referring to me, the AI, or are you looking to discuss multiple aspects or functionalities? Let me know how I can best engage with you!
+======================================== query 
+1723353355.4328623
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生'}
+好的，我已经将“我是清华大学2019级计算机系的本科生”这段话加入了记忆。请问有其他需要帮助的吗？
+======================================== query 
+1723353410.6220226
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生'}
+好的，我已经记住了：“我是清华大学2019级计算机系的本科生。”
+======================================== query 
+1723353544.2283118
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生'}
+好的，我已经将“我是清华大学2019级计算机系的本科生”这段话加入到我的记忆中了，有什么需要我帮忙的吗？
+======================================== query 

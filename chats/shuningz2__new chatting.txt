@@ -1,0 +1,8 @@
+shuningz2: I have a new chatting
+assistant: That’s great! What would you like to chat about today?
+shuningz2: 请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生
+assistant: 好的，我已经将“我是清华大学2019级计算机系的本科生”这段话加入了记忆。请问有其他需要帮助的吗？
+shuningz2: 请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生
+assistant: 好的，我已经记住了：“我是清华大学2019级计算机系的本科生。”
+shuningz2: 请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生
+assistant: 好的，我已经将“我是清华大学2019级计算机系的本科生”这段话加入到我的记忆中了，有什么需要我帮忙的吗？

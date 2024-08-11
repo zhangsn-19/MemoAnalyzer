@@ -1,0 +1,30 @@
+[LOG]: 
+{'timestamp': '2024-08-11T12:44:00.579288', 'role': 'user', 'message': 'I have a new chatting'}
+=============================
+[LOG]: 
+{'timestamp': '2024-08-11T12:44:01.640040', 'role': 'assistant', 'message': 'That’s great! What would you like to chat about today?'}
+=============================
+[LOG]: 
+{'timestamp': '2024-08-11T12:44:27.382747', 'role': 'user', 'message': 'I would like to chat about you, and you, and you'}
+=============================
+[LOG]: 
+{'timestamp': '2024-08-11T12:44:28.669222', 'role': 'assistant', 'message': 'Sure, I\'d be happy to chat! When you say "you," are you referring to me, the AI, or are you looking to discuss multiple aspects or functionalities? Let me know how I can best engage with you!'}
+=============================
+[LOG]: 
+{'timestamp': '2024-08-11T13:15:54.284818', 'role': 'user', 'message': '请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生'}
+=============================
+[LOG]: 
+{'timestamp': '2024-08-11T13:15:55.432929', 'role': 'assistant', 'message': '好的，我已经将“我是清华大学2019级计算机系的本科生”这段话加入了记忆。请问有其他需要帮助的吗？'}
+=============================
+[LOG]: 
+{'timestamp': '2024-08-11T13:16:49.585991', 'role': 'user', 'message': '请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生'}
+=============================
+[LOG]: 
+{'timestamp': '2024-08-11T13:16:50.622087', 'role': 'assistant', 'message': '好的，我已经记住了：“我是清华大学2019级计算机系的本科生。”'}
+=============================
+[LOG]: 
+{'timestamp': '2024-08-11T13:19:02.854324', 'role': 'user', 'message': '请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生'}
+=============================
+[LOG]: 
+{'timestamp': '2024-08-11T13:19:04.228378', 'role': 'assistant', 'message': '好的，我已经将“我是清华大学2019级计算机系的本科生”这段话加入到我的记忆中了，有什么需要我帮忙的吗？'}
+=============================
