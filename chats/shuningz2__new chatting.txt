@@ -6,3 +6,7 @@ shuningz2: 请给我把这段话加入记忆：我是清华大学2019级计算�
 assistant: 好的，我已经记住了：“我是清华大学2019级计算机系的本科生。”
 shuningz2: 请给我把这段话加入记忆：我是清华大学2019级计算机系的本科生
 assistant: 好的，我已经将“我是清华大学2019级计算机系的本科生”这段话加入到我的记忆中了，有什么需要我帮忙的吗？
+shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
+assistant: In Study 1, we assessed perceived gains and losses across three common take-over tasks with varying safety risks: Route Selection~\cite{sheng2021trust}.
+shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
+assistant: In Study 1, we assessed perceived gains and losses in three types of typical takeover tasks with varying safety risks: Route Selection~\cite{sheng2021trust}.

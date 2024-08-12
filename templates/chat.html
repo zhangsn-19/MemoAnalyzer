@@ -117,20 +117,7 @@
 <body>
     <div id="plugin-container" style="display:none; position:fixed; top:50px; right:50px; width:300px; padding:20px; background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">
         <!-- Memory Generation Stage -->
-        <div id="memory-stage">
-            <h5>Memory Generation Stage</h5>
-            <p>Phrase: <div id="phrase" contenteditable="true" style="border: 1px solid #ccc; padding: 5px; border-radius: 5px;"></div></p>
-            
-            <p>Original Text: <span id="original-text"></span></p>
-            
-            <!-- Confidence 显示为百分比条 -->
-            <p>Confidence: <div id="confidence-bar" style="width: 100%; background-color: #f1f1f1; border-radius: 5px; height: 20px;">
-                <div id="confidence" style="height: 100%; background-color: #28a745; border-radius: 5px; width: 0%;"></div>
-            </div></p>
-            <button id="view-reasoning" class="btn btn-info">View Reasoning</button>
-            <button id="add-memory" class="btn btn-success">Add to Memory Bank</button>
-            <button id="close-plugin" class="btn btn-danger">Close</button>
-        </div>
+        
     </div>
     <div id="chat-container">
         <div id="chat-list">
@@ -151,7 +138,7 @@
             <div id="messages">
                 {% for conversation in conversations %}
                 <div class="message {% if conversation.startswith('assistant:') %}assistant{% else %}user{% endif %}">
-                    {{ conversation.split(': ', 1)[1] }}
+                    {{ conversation.split(': ', 1)[1] | safe }}
                 </div>
                 {% endfor %}
             </div>
@@ -165,19 +152,32 @@
     </div>
     <script>
         // MathJax 渲染
+
         function displayMemoryItems(memorySuggestions) {
-            let phraseDiv = document.getElementById('phrase');
-            let confidenceBar = document.getElementById('confidence');
+            const plugin_container = document.getElementById('plugin-container');
+            // let phraseDiv = document.getElementById('phrase');
+            // let confidenceBar = document.getElementById('confidence');
             
-            // 假设只显示第一个记忆条目的内容
-            if (memorySuggestions.length > 0) {
-                const memoryItem = memorySuggestions[0];
-                
-                // 设置 Phrase 可编辑 div 的内容
-                phraseDiv.innerText = memoryItem.memoryText;
-                
-                // 设置 Confidence 百分比条
-                confidenceBar.style.width = memoryItem.confidence + '%';
+    
+            
+            for (let i = 0; i < memorySuggestions.length; i++) {
+                const memoryItem = memorySuggestions[i];
+                const memoryItemDiv = document.createElement('div');
+                memoryItemDiv.className = 'memory-item';
+                memoryItemDiv.innerHTML = `
+                <div id="memory-stage">
+            <p>Phrase: <div id="phrase" contenteditable="true" style="border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${memoryItem.memoryText}</div></p>
+                       
+            <!-- Confidence 显示为百分比条 -->
+            <p>Confidence: <div id="confidence-bar" style="width: 100%; background-color: #f1f1f1; border-radius: 5px; height: 20px;">
+                <div id="confidence" style="height: 100%; background-color: #28a745; border-radius: 5px; width: ${memoryItem.confidence }%;"></div>
+            </div></p>
+            <button id="view-reasoning" class="btn btn-info">View Reasoning</button>
+            <button id="add-memory" class="btn btn-success">Add to Memory Bank</button>
+            <button id="close-plugin" class="btn btn-danger">Close</button>
+        </div>
+                `;
+                plugin_container.appendChild(memoryItemDiv);
             }
         }
 
@@ -185,23 +185,20 @@
         function highlightOriginalText(memorySuggestions) {
             let messageInput = document.querySelector('input[name="message"]');
             let originalText = messageInput.value;
-
             memorySuggestions.forEach(item => {
-                let regex = new RegExp(`(${item.originalText})`, 'gi');
-                originalText = originalText.replace(regex, `<mark>$1</mark>`);
+                // let regex = new RegExp(`(${item.originalText})`, 'gi');
+                // 高亮匹配的文本
+                console.log(item.originalText);
+                originalText = originalText.replace(item.originalText, `<mark>${item.originalText}</mark>`);
             });
-
-            messageInput.innerHTML = originalText;
+            return originalText;
         }
 
         document.getElementById('send-button').onclick = function(event) {
             console.log("Send button clicked.");
             event.preventDefault(); // 阻止表单默认提交
-
             const messageInput = document.querySelector('input[name="message"]');
             const message = messageInput.value;
-
-            // 调用 memory_evaluation 接口
             const xhr = new XMLHttpRequest();
             xhr.open("POST", "{{ url_for('memory_evaluation') }}", true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -209,17 +206,45 @@
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     console.log("Received memory evaluation response.");
                     const response = JSON.parse(xhr.responseText);
+                    console.log(response);
                     const memorySuggestions = response.memory_suggestions;  // 假设这是个数组
 
                     // 显示多个记忆条目
                     displayMemoryItems(memorySuggestions);
-                    highlightOriginalText(memorySuggestions);
+                    const highlightedText = highlightOriginalText(memorySuggestions);
 
                     // 显示插件
                     document.getElementById('plugin-container').style.display = 'block';
 
                     // 清空输入框
                     messageInput.value = '';
+                    
+                    xhr.open("POST", "{{ url_for('chat') }}", true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            console.log("Received chat response.");
+                            const response = JSON.parse(xhr.responseText);
+                            console.log(response);
+                            const conversation = response.conversation;  // 假设这是个数组
+
+                            // 更新聊天框
+                            const messagesDiv = document.getElementById('messages');
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = 'message user';
+                            messageDiv.innerText = message;
+                            messagesDiv.appendChild(messageDiv);
+
+                            conversation.forEach(item => {
+                                const messageDiv = document.createElement('div');
+                                messageDiv.className = 'message assistant';
+                                messageDiv.innerText = item;
+                                messagesDiv.appendChild(messageDiv);
+                            });
+                        }
+                    };
+                    xhr.send(`message=${encodeURIComponent(highlightedText)}&chat_name={{ selected_chat }}`);
+                    
                 }
             };
             xhr.send(`message=${encodeURIComponent(message)}`);

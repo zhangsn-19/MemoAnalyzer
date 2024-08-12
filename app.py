@@ -103,13 +103,34 @@ system_memory_prompt = """Evaluate the following text and decide which text shou
 
 [Rules]
 Do not output other text.
+
 MUST output memory text and original text conforming the form.
-Memory text is the text you think the user ask you to memorize.
-Original text is the text from the original sentences. 
+
+Memory text refers to the key information that you infer the user wants you to remember from their prompt. 
+This could be details such as their job title, the name of their company, the name of a project, etc.
+Try to extract as many relevant pieces of information as possible.
+
+Original text is the text from the user's original prompt from which the Memory Text was derived.
+Correspond each piece of Memory Text with the Original Text from which it was inferred.
+
 You could output nothing if there were no memories.
 For confidence you should output a concrete number.
 NEVER output any text I include in the output format such as 0% and 100%
 
+Here are an example:
+[Input]
+帮我设计一份面试题库，候选人通常是中国985高校的CS方向的在读学生或者应届毕业生，我需要和他们一起开发类似腾讯的太极机器学习平台，Idex平台，US平台，以及亚马逊的SageMaker类似的东西，技术栈是Java，需要用到的Framework是SpringBoot，用到的ORM是 JPA
+[Output]
+- Memory Text. 你是中级技术经理
+- Original Text. 机器学习平台，亚马逊，Java, SpringBoot, JPA
+- Confidence 91.5%
+
+- Memory Text. 你在阿里云工作
+- Original Text. 类似腾讯
+- Confidence 89.2%
+
+
+Here is my Input:
 [Input]
 """
 
@@ -127,13 +148,12 @@ def memory_evaluation():
             {"role": "user", "content": message}
         ]
     )
-    
     # 假设 GPT 返回的内容是需要存入记忆的内容
     memory_suggestions = []
     raw_suggestions = response.choices[0].message.content.strip().split("\n\n")
-    
+    print(response.choices[0].message.content)
     for suggestion in raw_suggestions:
-        parts = suggestion.split('- Original Text')
+        parts = suggestion.split('- Original Text.')
         if len(parts) < 2:
             print("Warning: missing Original Text or Confidence part.")
             continue
@@ -197,6 +217,7 @@ def chat():
         new_chat_name = request.form.get('new_chat_name')
         if new_chat_name:
             # 创建新对话
+            print(f"Creating new chat: {new_chat_name}")
             selected_chat = new_chat_name
             chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{selected_chat}.txt')
             # 确保文件存在
@@ -205,6 +226,7 @@ def chat():
             # 更新 chat_list 确保新对话立即显示
             chat_list = [f.split('__')[1] for f in os.listdir(CHAT_DATA_DIR) if f.startswith(f"{current_user.username}__")]
         else:
+            print("Processing chat message")
             chat_name = request.form.get('chat_name', '')
             message = request.form.get('message', '')
 
@@ -218,6 +240,7 @@ def chat():
                     {"role": "system", "content": "Your system prompt goes here"},
                     {"role": "user", "content": message}
                 ])
+                print(f"Bot response: {bot_response}")
                 log_message("assistant", bot_response)
                 save_message_to_file(chat_file, "assistant", bot_response)
 
@@ -229,6 +252,8 @@ def chat():
             conversations = f.readlines()
     else:
         conversations = []
+    print("========= conversations ========")
+    print(conversations)
     print("========= chat list ========")
     print(chat_list)
     print("========= selected chat ========")
