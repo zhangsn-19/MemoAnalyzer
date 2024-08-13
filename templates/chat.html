@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .memory-item {
-            border: 1px solid #ccc;
+            /* border: 1px solid #ccc; */
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
@@ -78,6 +78,9 @@
             color: white;
             cursor: pointer;
         }
+        .memory-type-item {
+            display: inline-block;
+        }
         .chat-link {
             display: block;
             padding: 10px;
@@ -119,6 +122,8 @@
         <!-- Memory Generation Stage -->
         
     </div>
+    <div id="past-memory-container" style="display:none; position:fixed; top:50px; left:50px; width:300px; padding:20px; background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">使用过往记忆
+    </div>
     <div id="chat-container">
         <div id="chat-list">
             <h4>Chats</h4>
@@ -150,8 +155,49 @@
             </form>
         </div>
     </div>
+
     <script>
-        // MathJax 渲染
+
+    const pastMemoryContainer = document.getElementById('past-memory-container');
+    const memoryList= {
+    "职业信息":[
+        "用户正在寻找算法工程师的跳槽机会"
+    ],
+    "地点信息":[
+        "用户要求推荐西溪的新楼盘…"
+    ],
+    "金融计划":[
+        "用户希望用机器学习平台的经验创业"
+    ],
+    "健康信息":[
+        "用户身体不好，要求推荐养生方案"
+    ],
+    "兴趣偏好":[
+        "用户喜欢看电影，要求推荐一部好看的电影"
+    ]
+}
+
+    // 给key分配颜色
+    const colors = ["#FFBD7B", "#FFACAD", "#FAE85B", "#A5EECB", "#C6C5FE"]
+    Object.keys(memoryList).forEach((type, index) => {
+        const memoryDiv = document.createElement('div');
+        memoryDiv.className = 'memory-type-item';
+        memoryDiv.innerHTML = `
+            <span id="phrase" contenteditable="true" style="background-color:${colors[index]};border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${type}</span>
+        `;
+        pastMemoryContainer.appendChild(memoryDiv);
+    });
+
+    Object.keys(memoryList).forEach((type, index) => {
+        memoryList[type].forEach(memory => {
+            const memoryDiv = document.createElement('div');
+            memoryDiv.className = 'memory-item';
+            memoryDiv.innerHTML = `
+                <div id="phrase" contenteditable="true" style="background-color:${colors[index]};border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${memory}</div>
+            `;
+            pastMemoryContainer.appendChild(memoryDiv);
+        });
+    });
 
         function displayMemoryItems(memorySuggestions) {
             const plugin_container = document.getElementById('plugin-container');
@@ -165,16 +211,8 @@
                 const memoryItemDiv = document.createElement('div');
                 memoryItemDiv.className = 'memory-item';
                 memoryItemDiv.innerHTML = `
-                <div id="memory-stage">
-            <p>Phrase: <div id="phrase" contenteditable="true" style="border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${memoryItem.memoryText}</div></p>
-                       
-            <!-- Confidence 显示为百分比条 -->
-            <p>Confidence: <div id="confidence-bar" style="width: 100%; background-color: #f1f1f1; border-radius: 5px; height: 20px;">
-                <div id="confidence" style="height: 100%; background-color: #28a745; border-radius: 5px; width: ${memoryItem.confidence }%;"></div>
-            </div></p>
-            <button id="view-reasoning" class="btn btn-info">View Reasoning</button>
-            <button id="add-memory" class="btn btn-success">Add to Memory Bank</button>
-            <button id="close-plugin" class="btn btn-danger">Close</button>
+                <div id="memory-stage">可信度：${memoryItem.confidence }%
+            <div id="phrase" contenteditable="true" style="border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${memoryItem.memoryText}</div>
         </div>
                 `;
                 plugin_container.appendChild(memoryItemDiv);
@@ -188,10 +226,21 @@
             memorySuggestions.forEach(item => {
                 // let regex = new RegExp(`(${item.originalText})`, 'gi');
                 // 高亮匹配的文本
-                console.log(item.originalText);
-                originalText = originalText.replace(item.originalText, `<mark>${item.originalText}</mark>`);
+                const type_info = item.type
+                let type_index = Object.keys(memoryList).indexOf(type_info)
+                console.log("type_index", type_index);
+                // 如果不存在，则新建一个颜色
+                if (type_index === -1) {
+                    type_index = Object.keys(memoryList).length
+                    colors.push(`#${Math.floor(Math.random()*16777215).toString(16)}`)
+                }
+                const color = colors[type_index]
+                originalText = originalText.replace(item.originalText, `<mark style="background-color: ${color};">${item.originalText}</mark>`);
             });
-            return originalText;
+            const plugin_container = document.getElementById('plugin-container');
+            const currentPrompt = document.createElement('div');
+            currentPrompt.innerHTML = originalText
+            plugin_container.appendChild(currentPrompt);
         }
 
         document.getElementById('send-button').onclick = function(event) {
@@ -211,10 +260,11 @@
 
                     // 显示多个记忆条目
                     displayMemoryItems(memorySuggestions);
-                    const highlightedText = highlightOriginalText(memorySuggestions);
+                    highlightOriginalText(memorySuggestions);
 
                     // 显示插件
                     document.getElementById('plugin-container').style.display = 'block';
+                    document.getElementById('past-memory-container').style.display = 'block';
 
                     // 清空输入框
                     messageInput.value = '';
@@ -243,7 +293,7 @@
                             });
                         }
                     };
-                    xhr.send(`message=${encodeURIComponent(highlightedText)}&chat_name={{ selected_chat }}`);
+                    xhr.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}`);
                     
                 }
             };

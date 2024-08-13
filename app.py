@@ -95,10 +95,12 @@ system_memory_prompt = """Evaluate the following text and decide which text shou
 [Output Format]
 - Memory Text.
 - Original text.
+- Type:
 - Confidence (a number between 0% and 100%).
 
 - Memory Text.
 - Original Text.
+- Type:
 - Confidence (a number between 0% and 100%).
 
 [Rules]
@@ -113,6 +115,8 @@ Try to extract as many relevant pieces of information as possible.
 Original text is the text from the user's original prompt from which the Memory Text was derived.
 Correspond each piece of Memory Text with the Original Text from which it was inferred.
 
+Type refers to the type of information that the Memory Text represents, for example, "职业信息", "地点信息", etc.
+
 You could output nothing if there were no memories.
 For confidence you should output a concrete number.
 NEVER output any text I include in the output format such as 0% and 100%
@@ -123,10 +127,12 @@ Here are an example:
 [Output]
 - Memory Text. 你是中级技术经理
 - Original Text. 机器学习平台，亚马逊，Java, SpringBoot, JPA
+- Type: 职业信息
 - Confidence 91.5%
 
 - Memory Text. 你在阿里云工作
 - Original Text. 类似腾讯
+- Type: 地点信息
 - Confidence 89.2%
 
 
@@ -159,15 +165,12 @@ def memory_evaluation():
             continue
 
         memory_text = parts[0].replace("- Memory Text.", "").strip()
-        original_text_confidence = parts[1].strip().split('- Confidence')
+        original_text = parts[1].strip().split('- Type:')[0].strip()
+        type_confidence = parts[1].strip().split('- Type:')[1].strip()
+        type_info = type_confidence.strip().split('- Confidence')[0].replace("\n", "")
+        confidence = type_confidence.strip().split('- Confidence')[1].replace("%", "")
 
-        if len(original_text_confidence) < 2:
-            print("Warning: missing Confidence part.")
-            continue
-
-        original_text = original_text_confidence[0].strip()
-        confidence = original_text_confidence[1].strip().replace("%", "")
-
+        print(type_info)
         try:
             confidence = int(confidence)
         except ValueError:
@@ -177,6 +180,7 @@ def memory_evaluation():
         memory_suggestions.append({
             'memoryText': memory_text,
             'originalText': original_text,
+            'type': type_info,
             'confidence': confidence
         })
 

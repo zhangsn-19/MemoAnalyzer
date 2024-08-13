@@ -41,3 +41,48 @@ In Study 1, we measured perceived gains and losses in three typical take-over ta
 {'role': 'user', 'content': '<mark>请帮我用学术、严谨、标准、简练的英文润色这段文本</mark>，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””<mark>Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\\cite{sheng2021trust}</mark>,“”“'}
 In Study 1, we assessed perceived gains and losses in three typical take-over tasks, each with varying safety risks: Route Selection~\cite{sheng2021trust}.
 ======================================== query 
+1723446524.5997603
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': 'nihao'}
+你好！很高兴见到你！请问有什么我可以帮助你的吗？
+======================================== query 
+1723446538.1753066
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\\cite{sheng2021trust},“”“'}
+In Study 1, we assessed perceived gains and losses across three types of typical takeover tasks with varying levels of safety risk, as outlined in Route Selection \cite{sheng2021trust}.
+======================================== query 
+1723447691.3596265
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '<mark>请帮我用学术、严谨、标准、简练的英文润色这段文本</mark>，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\\cite{sheng2021trust},“”“'}
+In Study 1, we assessed perceived gains and losses in three typical take-over tasks, each associated with varying levels of safety risk: Route Selection~\cite{sheng2021trust}.
+======================================== query 
+1723447848.3868442
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '<mark>请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\\cite{sheng2021trust},“”“</mark>'}
+In Study 1, we assessed perceived gains and losses in three typical take-over tasks with varying safety risks: Route Selection~\cite{sheng2021trust}.
+======================================== query 
+1723448944.5288146
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '<mark>请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义</mark>：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: <mark>Route Selection~\\cite{sheng2021trust}</mark>,“”“'}
+In Study 1, we assessed perceived gains and losses in three typical take-over tasks with varying safety risks: Route Selection ~\cite{sheng2021trust}.
+======================================== query 
+1723449316.128639
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '<mark>请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\\cite{sheng2021trust},“</mark>”“'}
+In Study 1, we assessed the perceived gains and losses in three types of typical take-over tasks with varying levels of safety risk: Route Selection~\cite{sheng2021trust}.
+======================================== query 
+1723472994.939302
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\\cite{sheng2021trust},“”“'}
+In Study 1, we assessed perceived gains and losses in three typical take-over tasks, each with varying safety risks: Route Selection~\cite{sheng2021trust}.
+======================================== query 
+1723473668.15143
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\\cite{sheng2021trust},“”“'}
+In Study 1, we measured perceived gains and losses in three typical take-over tasks, each with varying safety risks: Route Selection~\cite{sheng2021trust}.
+======================================== query 
+1723534224.8569713
+{'role': 'system', 'content': 'Your system prompt goes here'}
+{'role': 'user', 'content': '请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\\cite{sheng2021trust},“”“'}
+In Study 1, we assessed perceived gains and losses in three typical take-over tasks with varying safety risks: Route Selection~\cite{sheng2021trust}.
+======================================== query 
