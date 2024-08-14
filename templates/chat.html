@@ -191,7 +191,7 @@
         });
     }
 
-        function displayMemoryItems(memorySuggestions) {
+        function displayMemoryItems(memorySuggestions, memoryList) {
             const plugin_container = document.getElementById('plugin-container');
             // let phraseDiv = document.getElementById('phrase');
             // let confidenceBar = document.getElementById('confidence');
@@ -202,11 +202,12 @@
                 const memoryItem = memorySuggestions[i];
                 const memoryItemDiv = document.createElement('div');
                 const type = memoryItem.type
+                const color = colors[Object.keys(memoryList).indexOf(type)]
                 memoryItemDiv.className = 'memory-item';
                 memoryItemDiv.innerHTML = `
                 <div id="memory-stage">
                     可信度：${memoryItem.confidence }%
-                    <span class="type">${type}</span>
+                    <span class="type" style="background-color: ${color}">${type}</span>
                     <input type="checkbox" />
                     <div class="phrase" contenteditable="true" style="border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${memoryItem.memoryText}</div>
                 </div>
@@ -269,7 +270,7 @@
                             const memorySuggestions = response.memory_suggestions;  // 假设这是个数组
 
                             // 显示多个记忆条目
-                            displayMemoryItems(memorySuggestions);
+                            displayMemoryItems(memorySuggestions, memoryList);
                             highlightOriginalText(memorySuggestions, memoryList);
 
                             // 显示插件
