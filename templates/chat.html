@@ -113,6 +113,10 @@
             z-index: 1000;
             padding: 15px;
         }
+        input[type="checkbox"] {
+            width: 30px;
+            height: 30px;
+        }
     </style>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async
@@ -163,6 +167,14 @@
 
     <script>
 
+    function debounce(func, ms) {
+        let timer = 0;
+        return function(callback, ms){
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    }
+
     const pastMemoryContainer = document.getElementById('past-memory-container');
     const colors = ["#FFBD7B", "#FFACAD", "#FAE85B", "#A5EECB", "#C6C5FE"]
     let memoryList = {};
@@ -174,7 +186,7 @@
             const memoryDiv = document.createElement('div');
             memoryDiv.className = 'memory-type-item';
             memoryDiv.innerHTML = `
-                <span id="phrase" contenteditable="true" style="background-color:${colors[index]};border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${type}</span>
+                <span class="phrase" contenteditable="true" style="background-color:${colors[index]};border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${type}</span>
             `;
             pastMemoryContainer.appendChild(memoryDiv);
         });
@@ -186,7 +198,7 @@
                 memoryDiv.innerHTML = `
                     <input type="checkbox"  checked />
                     <div id="phrase" contenteditable="true" style="background-color:${colors[index]};border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${memory}</div>
-                    <svg width="40" height="40" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="40px" height="40px" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2.125 2.125V10H8.875V2.125H2.125Z" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linejoin="round"/>
 <path d="M4.375 4.375V7.75" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M6.625 4.375V7.75" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -200,6 +212,26 @@
                 memoryDiv.remove();
             });
                 pastMemoryContainer.appendChild(memoryDiv);
+            });
+        });
+
+        document.querySelectorAll('.phrase').forEach((phraseElement) => {
+            phraseElement.addEventListener('click', (event) => {
+                // 获取被点击的#phrase元素的文本内容
+                const type = event.target.innerText;
+
+                // 遍历所有的.memory-item元素
+                document.querySelectorAll('.memory-item').forEach((memoryElement) => {
+                // 获取.memory-item元素中的#phrase元素的文本内容
+                const memoryType = memoryElement.querySelector('#phrase').innerText;
+
+                // 如果.memory-item元素的type与被点击的#phrase元素的type相同，则显示该.memory-item元素，否则隐藏
+                if (memoryType === type) {
+                    memoryElement.style.display = 'block';
+                } else {
+                    memoryElement.style.display = 'none';
+                }
+                });
             });
         });
     }
@@ -256,7 +288,7 @@
 
 
 
-        document.getElementById('send-button').onclick = function(event) {
+        document.getElementById('send-button').onclick = debounce(function(event) {
             console.log("Send button clicked.");
             event.preventDefault(); // 阻止表单默认提交
             const messageInput = document.querySelector('input[name="message"]');
@@ -298,8 +330,8 @@
             };
             xhr0.send();            
             
-        };
-
+        }
+        , 500)
         document.getElementById('finish-button').onclick = function(event){
             let checkedMemories = [];
             document.querySelectorAll('.memory-item input[type="checkbox"]:checked').forEach(checkbox => {
