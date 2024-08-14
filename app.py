@@ -81,6 +81,11 @@ def login():
                 uid, username, password = user.strip().split(',')
                 if username == form.username.data and password == form.password.data:
                     login_user(User(uid, username, password))
+                    # 创建用户的记忆文件
+                    memory_file = f'{username}_memory.json'
+                    if not os.path.exists(memory_file):
+                        with open(memory_file, 'w') as f:
+                            f.write(json.dumps([]))
                     return redirect(url_for('chat'))
         flash('Login Unsuccessful. Please check username and password', 'danger')
     return render_template('login.html', form=form)
@@ -208,7 +213,8 @@ MEMORY_DIR = 'memory'
 @app.route("/get_memory", methods=['GET'])
 @login_required
 def get_memory():
-    with open("memory.json", "r") as f:
+    username = current_user.username
+    with open(f"{username}_memory.json", "r") as f:
         memory = f.read()
     return jsonify({'memory': memory})
 
@@ -217,7 +223,7 @@ def get_memory():
 def update_memory():
     memory = request.form.get('memory')
     print(f"Received memory: {memory}")
-    with open("memory.json", "w") as f:
+    with open(f"{current_user.username}_memory.json", "w") as f:
         f.write(memory)
     return jsonify({'status': 'success'})
 
