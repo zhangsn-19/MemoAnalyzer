@@ -1,0 +1,16 @@
+shuningz: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
+assistant: In Study 1, we assessed perceived gains and losses in three typical take-over tasks with varying safety risks, as described in Route Selection~\cite{sheng2021trust}.
+shuningz: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
+assistant: In Study 1, we assessed perceived gains and losses across three standard take-over tasks, each associated with varying levels of safety risk: Route Selection~\cite{sheng2021trust}.
+shuningz: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
+assistant: In Study 1, we assessed perceived gains and losses in three types of typical take-over tasks, each associated with a different level of safety risk, following the methodology of Route Selection~\cite{sheng2021trust}.
+shuningz: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
+assistant: In Study 1, we assessed perceived gains and losses in three typical take-over tasks, each varying in safety risk: Route Selection~\cite{sheng2021trust}.
+shuningz: 我是清华大学2019级计算机系的本科生
+assistant: 你好！作为清华大学2019级计算机系的本科生，你在学术和技术上肯定已经有很多丰富的经验了。如果你有任何问题或需要建议，比如职业规划、跳槽机会、机器学习等方面的帮助，或者只是想聊聊别的兴趣爱好，都可以告诉我。我很乐意帮忙！
+shuningz: 我是清华大学2019级计算机系的本科生
+assistant: 很高兴认识你！作为清华大学2019级计算机系的本科生，你可能已经积累了不少计算机和编程方面的知识有什么我可以帮你的吗？例如，课程建议、项目思路、职业发展指导等？
+shuningz: 我是清华大学2019级计算机系的本科生
+assistant: 你好！很高兴认识你，作为清华大学2019级计算机系的本科生，有什么我可以帮忙的呢？无论是学术问题、职业规划、还是其他方面的疑问，我都很乐意提供帮助。
+shuningz: 我是清华大学2019级计算机系的本科生
+assistant: 很高兴认识你！你是一位清华大学2019级计算机系的本科生，不知你是否有具体的问题或者需要什么帮助呢？

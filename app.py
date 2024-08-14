@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, Length, EqualTo
 from datetime import datetime
 import time
 import ipdb
+import json
 
 from openai import AzureOpenAI
 
@@ -103,19 +104,21 @@ system_memory_prompt = """Evaluate the following text and decide which text shou
 - Type:
 - Confidence (a number between 0% and 100%).
 
-[Rules]
-Do not output other text.
+...
 
-MUST output memory text and original text conforming the form.
+[Rules]
+
+MUST output memory text, original text, type, and confidence for each memory using the format above. 
 
 Memory text refers to the key information that you infer the user wants you to remember from their prompt. 
 This could be details such as their job title, the name of their company, the name of a project, etc.
-Try to extract as many relevant pieces of information as possible.
+Try to extract as many relevant pieces of information as possible. 
 
 Original text is the text from the user's original prompt from which the Memory Text was derived.
 Correspond each piece of Memory Text with the Original Text from which it was inferred.
 
 Type refers to the type of information that the Memory Text represents, for example, "职业信息", "地点信息", etc.
+You need to prioritize using an existing memory_type: {}. If the current memoryText does not belong to any existing memory_type, only then should you use a new memory_type.
 
 You could output nothing if there were no memories.
 For confidence you should output a concrete number.
@@ -144,13 +147,14 @@ Here is my Input:
 @login_required
 def memory_evaluation():
     message = request.form.get('message')
+    memory_type = request.form.get('memory_type') 
     print(f"Received message for evaluation: {message}")  # 调试信息
 
     # 使用 GPT 模型进行初步推理，判断需要存储到记忆的内容
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": system_memory_prompt},
+            {"role": "system", "content": system_memory_prompt.format(memory_type)},
             {"role": "user", "content": message}
         ]
     )
@@ -200,6 +204,22 @@ def process_plugin():
 
 MEMORY_DIR = 'memory'
 
+@app.route("/get_memory", methods=['GET'])
+@login_required
+def get_memory():
+    with open("memory.json", "r") as f:
+        memory = f.read()
+    return jsonify({'memory': memory})
+
+@app.route('/update_memory', methods=['GET', 'POST'])
+@login_required
+def update_memory():
+    memory = request.form.get('memory')
+    print(f"Received memory: {memory}")
+    with open("memory.json", "w") as f:
+        f.write(memory)
+    return jsonify({'status': 'success'})
+
 if not os.path.exists(MEMORY_DIR):
     os.makedirs(MEMORY_DIR)
 
@@ -233,6 +253,7 @@ def chat():
             print("Processing chat message")
             chat_name = request.form.get('chat_name', '')
             message = request.form.get('message', '')
+            memory = request.form.get('memory', '')
 
             if chat_name and message:
                 chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
@@ -242,9 +263,9 @@ def chat():
                 # 生成响应
                 bot_response = generate_response([
                     {"role": "system", "content": "Your system prompt goes here"},
-                    {"role": "user", "content": message}
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": "You can use these memories to answer user's question: "+memory}
                 ])
-                print(f"Bot response: {bot_response}")
                 log_message("assistant", bot_response)
                 save_message_to_file(chat_file, "assistant", bot_response)
 
@@ -256,13 +277,12 @@ def chat():
             conversations = f.readlines()
     else:
         conversations = []
-    print("========= conversations ========")
-    print(conversations)
     print("========= chat list ========")
     print(chat_list)
     print("========= selected chat ========")
     print(selected_chat)
     print("========= ========== ========")
+    # return jsonify({'chat_list': chat_list, 'conversations': conversations, 'selected_chat': selected_chat})
     return render_template('chat.html', chat_list=chat_list, conversations=conversations, selected_chat=selected_chat)
 
 @app.route('/clear', methods=['POST'])
