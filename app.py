@@ -112,7 +112,8 @@ MUST output memory text, original text, type, and confidence for each memory usi
 
 Memory text refers to the key information that you infer the user wants you to remember from their prompt. 
 This could be details such as their job title, the name of their company, the name of a project, etc.
-Try to extract as many relevant pieces of information as possible. 
+Try to extract as many relevant pieces of information as possible. The Memory Text should be a concise summary of the key information.
+
 
 Original text is the text from the user's original prompt from which the Memory Text was derived.
 Correspond each piece of Memory Text with the Original Text from which it was inferred.
