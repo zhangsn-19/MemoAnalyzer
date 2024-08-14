@@ -12,6 +12,7 @@
             margin-bottom: 10px;
             border-radius: 5px;
             display: flex;
+            align-items: center;
         }
 
         mark {
@@ -179,13 +180,25 @@
         });
 
         Object.keys(memoryList).forEach((type, index) => {
-            memoryList[type].forEach(memory => {
+            memoryList[type].forEach((memory, memoryIndex) => {
                 const memoryDiv = document.createElement('div');
                 memoryDiv.className = 'memory-item';
                 memoryDiv.innerHTML = `
                     <input type="checkbox"  checked />
                     <div id="phrase" contenteditable="true" style="background-color:${colors[index]};border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${memory}</div>
-                `;
+                    <svg width="40" height="40" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.125 2.125V10H8.875V2.125H2.125Z" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linejoin="round"/>
+<path d="M4.375 4.375V7.75" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6.625 4.375V7.75" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1 2.125H10" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3.8125 2.125L4.50627 1H6.50767L7.1875 2.125H3.8125Z" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linejoin="round"/>
+</svg>
+
+                    `;
+                memoryDiv.querySelector('svg').addEventListener('click', () => {
+                memoryList[type] = memoryList[type].filter((_, i) => i !== memoryIndex);
+                memoryDiv.remove();
+            });
                 pastMemoryContainer.appendChild(memoryDiv);
             });
         });
