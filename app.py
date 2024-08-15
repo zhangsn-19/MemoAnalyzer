@@ -149,6 +149,23 @@ Here is my Input:
 [Input]
 """
 
+# 用户这次输入+过往记忆-->GPT-->输出?
+# @app.route('/info_extraction', methods=['POST'])
+# @login_required
+# def info_extraction():
+#     message = request.form.get('message')
+#     memory_type = request.form.get('memory_type')
+#     with open(f"{current_user.username}_memory.json", "r") as f:
+#         memory = json.loads(f.read())
+    
+#     response = client.chat.completions.create(
+#         model="gpt-4o",
+#         messages=[
+#             {"role": "system", "content": system_memory_prompt.format(memory_type)},
+#             {"role": "user", "content": message}
+#         ]
+#     )
+
 @app.route('/memory_evaluation', methods=['POST'])
 @login_required
 def memory_evaluation():

@@ -129,7 +129,15 @@
         <!-- Memory Generation Stage -->
         
     </div>
-
+    <div id="new-memory-container" style="display:none; position:fixed; top:50px; right:450px; width:500px; padding:20px; z-index: 999;background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">
+        <select id="group" value="1">
+            <option value="1">Dimond</option>
+            <option value="2">vertical</option>
+        </select>
+        <input type="text" placeholder="New Memory" style="border: 1px solid #ccc; padding: 5px; border-radius: 5px;">
+        <button type="button" id="add-memory-button">Add Memory</button>
+        <button type="button" id="close-plugin">Close</button>
+    </div>
     <div id="past-memory-container" style="display:none;height: 700px;overflow-y:auto; position:fixed; top:50px; left:50px; width:300px; padding:20px; background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">使用过往记忆
     </div>
     <button type="button" id="finish-button" style="display:none; position:fixed; bottom:50px; right:50px;z-index = 999">完成编辑</button>
@@ -173,7 +181,59 @@
     const colors = ["#FFBD7B", "#FFACAD", "#FAE85B", "#A5EECB", "#C6C5FE"]
     let memoryList = {};
     function displayPastMemory(memoryList) {
+        renderMemoryItems(memoryList);
         console.log(Object.keys(memoryList), "keys");
+        const memoryDiv = document.querySelector('#new-memory');
+        memoryDiv.querySelector('svg').addEventListener('click', () => {
+            document.getElementById('new-memory-container').style.display = 'block';
+            console.log("click");
+
+        })
+        const newMemory = document.getElementById('new-memory-container');
+        newMemory.querySelector('#add-memory-button').addEventListener('click', () => {
+            const memoryType = newMemory.querySelector('#group').value;
+            const memoryText = newMemory.querySelector('input').value;
+            if(memoryList[memoryType]){
+                memoryList[memoryType].push(memoryText);
+            }
+            else{
+                memoryList[memoryType] = [memoryText];
+            }
+            console.log(memoryList);
+            renderMemoryItems(memoryList);
+            newMemory.style.display = 'none';
+        });
+        newMemory.querySelector('#close-plugin').addEventListener('click', () => {
+            newMemory.style.display = 'none';
+        });
+
+        
+
+        
+
+        document.querySelectorAll('.memoryType').forEach((phraseElement) => {
+            phraseElement.addEventListener('click', (event) => {
+                const type = event.target.innerText;
+
+                document.querySelectorAll('.memory-item').forEach((memoryElement) => {
+
+                const memoryPhrase = memoryElement.querySelector('.phrase').innerText;
+                // 找到 memoryPhrase 在memoryList中的key
+                const memoryType = Object.keys(memoryList).find(key => memoryList[key].includes(memoryPhrase));  
+                console.log(memoryType, type);
+                if (memoryType === type) {
+                    console.log(memoryElement);
+                    memoryElement.style.display = 'flex';
+                } else {
+                    memoryElement.style.display = 'none';
+                }
+                });
+            });
+        });
+    }
+
+    function renderMemoryItems(memoryList) {
+        pastMemoryContainer.innerHTML = '';
         // 给key分配颜色
         Object.keys(memoryList).forEach((type, index) => {
             console.log(type)
@@ -184,6 +244,17 @@
             `;
             pastMemoryContainer.appendChild(memoryDiv);
         });
+
+        const memoryDiv = document.createElement('div');
+        memoryDiv.id = 'new-memory';
+        memoryDiv.className = 'memory-type-item';
+        memoryDiv.innerHTML = `
+        <svg width="30px" height="30px" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="17" height="17" rx="8.5" fill="#80E0FF"/>
+<path d="M12.284 7.125C12.4233 7.125 12.5572 7.1525 12.6855 7.2075C12.8138 7.2625 12.9238 7.33583 13.0155 7.4275C13.1072 7.51917 13.1805 7.62917 13.2355 7.7575C13.2905 7.88583 13.318 8.01967 13.318 8.159C13.318 8.30567 13.2905 8.44133 13.2355 8.566C13.1805 8.69067 13.1072 8.79883 13.0155 8.8905C12.9238 8.98217 12.8138 9.0555 12.6855 9.1105C12.5572 9.1655 12.4233 9.193 12.284 9.193H9.193V12.284C9.193 12.4307 9.1655 12.5663 9.1105 12.691C9.0555 12.8157 8.98217 12.9238 8.8905 13.0155C8.79883 13.1072 8.68883 13.1805 8.5605 13.2355C8.43217 13.2905 8.29833 13.318 8.159 13.318C8.01233 13.318 7.87667 13.2905 7.752 13.2355C7.62733 13.1805 7.51917 13.1072 7.4275 13.0155C7.33583 12.9238 7.2625 12.8157 7.2075 12.691C7.1525 12.5663 7.125 12.4307 7.125 12.284V9.193H4.034C3.88733 9.193 3.75167 9.1655 3.627 9.1105C3.50233 9.0555 3.39417 8.98217 3.3025 8.8905C3.21083 8.79883 3.1375 8.69067 3.0825 8.566C3.0275 8.44133 3 8.30567 3 8.159C3 8.01967 3.0275 7.88583 3.0825 7.7575C3.1375 7.62917 3.21083 7.51917 3.3025 7.4275C3.39417 7.33583 3.50233 7.2625 3.627 7.2075C3.75167 7.1525 3.88733 7.125 4.034 7.125H7.125V4.034C7.125 3.89467 7.1525 3.76083 7.2075 3.6325C7.2625 3.50417 7.33583 3.39417 7.4275 3.3025C7.51917 3.21083 7.62733 3.1375 7.752 3.0825C7.87667 3.0275 8.01233 3 8.159 3C8.445 3 8.68883 3.10083 8.8905 3.3025C9.09217 3.50417 9.193 3.748 9.193 4.034V7.125H12.284Z" fill="black"/>
+</svg>
+        `;
+        pastMemoryContainer.appendChild(memoryDiv);
 
         Object.keys(memoryList).forEach((type, index) => {
             memoryList[type].forEach((memory, memoryIndex) => {
@@ -206,26 +277,6 @@
                 memoryDiv.remove();
             });
                 pastMemoryContainer.appendChild(memoryDiv);
-            });
-        });
-
-        document.querySelectorAll('.memoryType').forEach((phraseElement) => {
-            phraseElement.addEventListener('click', (event) => {
-                const type = event.target.innerText;
-
-                document.querySelectorAll('.memory-item').forEach((memoryElement) => {
-
-                const memoryPhrase = memoryElement.querySelector('.phrase').innerText;
-                // 找到 memoryPhrase 在memoryList中的key
-                const memoryType = Object.keys(memoryList).find(key => memoryList[key].includes(memoryPhrase));  
-                console.log(memoryType, type);
-                if (memoryType === type) {
-                    console.log(memoryElement);
-                    memoryElement.style.display = 'flex';
-                } else {
-                    memoryElement.style.display = 'none';
-                }
-                });
             });
         });
     }
