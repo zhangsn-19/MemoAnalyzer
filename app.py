@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, Length, EqualTo
 from datetime import datetime
 import time
 import ipdb
+import re
 import json
 
 from openai import AzureOpenAI
@@ -102,12 +103,12 @@ system_memory_prompt = """Evaluate the following text and decide which text shou
 - Memory Text.
 - Original text.
 - Type:
-- Confidence (a number between 0% and 100%).
+- confidence (a number between 0% and 100%).
 
 - Memory Text.
 - Original Text.
 - Type:
-- Confidence (a number between 0% and 100%).
+- confidence (a number between 0% and 100%).
 
 ...
 
@@ -137,12 +138,12 @@ Here are an example:
 - Memory Text. 你是中级技术经理
 - Original Text. 机器学习平台，亚马逊，Java, SpringBoot, JPA
 - Type: 职业信息
-- Confidence 91.5%
+- confidence 91.5%
 
 - Memory Text. 你在阿里云工作
 - Original Text. 类似腾讯
 - Type: 地点信息
-- Confidence 89.2%
+- confidence 89.2%
 
 
 Here is my Input:
@@ -188,14 +189,14 @@ def memory_evaluation():
     for suggestion in raw_suggestions:
         parts = suggestion.split('- Original Text.')
         if len(parts) < 2:
-            print("Warning: missing Original Text or Confidence part.")
+            print("Warning: missing Original Text or confidence part.")
             continue
 
         memory_text = parts[0].replace("- Memory Text.", "").strip()
         original_text = parts[1].strip().split('- Type:')[0].strip()
         type_confidence = parts[1].strip().split('- Type:')[1].strip()
-        type_info = type_confidence.strip().split('- Confidence')[0].replace("\n", "")
-        confidence = type_confidence.strip().split('- Confidence')[1].replace("%", "")
+        type_info = type_confidence.strip().split('- confidence')[0].replace("\n", "")
+        confidence = type_confidence.strip().split('- confidence')[1].replace("%", "")
 
         print(type_info)
         try:
@@ -308,6 +309,90 @@ def chat():
     print("========= ========== ========")
     # return jsonify({'chat_list': chat_list, 'conversations': conversations, 'selected_chat': selected_chat})
     return render_template('chat.html', chat_list=chat_list, conversations=conversations, selected_chat=selected_chat)
+
+@app.route('/get_privacy', methods=['POST'])
+@login_required
+def get_privacy():
+    # memory 是个数组, 元素是字符串
+    with open(f'{current_user.username}_memory.json', 'r') as f:
+        memory = json.loads(f.read())
+    memory = " ".join(memory)
+    message = request.form.get('message')
+    prompt = '''
+        Please review the following text and decide if it can infer to any personal or sensitive information.
+        The text consists of the user's prompt and the system's memory. 
+        Note that the information stored in the system's memory should not be classified as personal or sensitive. 
+        Only information that can be inferred from the user's input and the system's memory should be considered. 
+        If any personal or sensitive information is inferred, please identify the information, indicate the exact phrases or words from the user's input (limitted to 7 words) and the orginal entire sentences from the memory used for the inference, and provide an associated confidence level.
+        
+        Input Format:
+        - User's prompt: ...
+        - Memory: ...
+
+        Output Format:
+        [{
+            "privacy_info": ...,
+            "confidence": ...,
+            "used_user_input": [
+                "...", "...", ...
+            ],
+            "used_memory": [
+                "...", "...", ...
+            ]
+        },{
+            "privacy_info": ...,
+            "confidence": ...,
+            "used_user_input": [
+                "...", "...", ...
+            ],
+            "used_memory": [
+                "...", "...", ...
+            ]
+        }]
+
+
+        For example:
+        Input:
+        - User's prompt: Please plan me a two day and one night trip to Pune by car.
+        - Memory: User watches Bollywood movies all the time.
+
+        Output:
+        [{
+            "privacy_info": "The user is Indian.",
+            "confidence": "95%",
+            "used_user_input": [
+                "trip to Pune."
+            ],
+            "used_memory": [
+                "User watches Bollywood movies all the time."
+            ]
+        }]
+
+        The following is the input:
+
+    '''
+    prompt += f"- User's prompt: {message}\n"
+    prompt += f"- Memory: {memory}\n"
+    prompt += "please output the privacy_info, confidence, used_user_input, and used_memory."
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages = [
+            {"role": "user", "content": prompt}
+        ]
+
+    )
+    # 解析成json
+    privacy = response.choices[0].message.content
+    print("res",privacy)
+    first_bracket = privacy.find("[")   
+    last_bracket = privacy.rfind("]")
+    privacy = privacy[first_bracket:last_bracket+1]
+    print(privacy)
+    # text to json
+    privacy = json.loads(privacy)
+
+    return jsonify({'privacy': privacy})
+    
 
 @app.route('/clear', methods=['POST'])
 @login_required

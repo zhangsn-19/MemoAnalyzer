@@ -118,6 +118,12 @@
             width: 30px;
             height: 30px;
         }
+        .privacy-item{
+            margin-bottom: 10px;
+        }
+        .privacy-item:hover{
+            background-color: #DCF8C0
+        }
     </style>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async
@@ -125,9 +131,8 @@
     </script>
 </head>
 <body>
-    <div id="plugin-container" style="display:none; max-height: 700px; overflow-y:auto; top:50px; right:50px; width:300px; padding:20px; background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">
+    <div id="plugin-container" style="display:none; max-height: 700px; overflow-y:auto; top:50px; left:50px; width:300px; padding:20px; background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">
         <!-- Memory Generation Stage -->
-        
     </div>
     <div id="new-memory-container" style="display:none; position:fixed; top:50px; right:450px; width:500px; padding:20px; z-index: 999;background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">
         <select id="group" value="1">
@@ -160,9 +165,19 @@
             <h4>{{ selected_chat }}</h4>
             <div id="messages">
                 {% for conversation in conversations %}
-                <div class="message {% if conversation.startswith('assistant:') %}assistant{% else %}user{% endif %}">
+                <!-- 
+                    只遍历assistant的回复，跳过user的输入
+                -->
+                {% if conversation.startswith('assistant') %}
+                <div class="message assistant">
                     {{ conversation.split(': ', 1)[1] | safe }}
                 </div>
+                
+                {% else %}
+                <div class="message user">
+                    {{ conversation.split(': ', 1)[1] | safe }}
+                </div>
+                {% endif %}
                 {% endfor %}
             </div>
             <form id="message-form">
@@ -280,6 +295,19 @@
             });
         });
     }
+        function displayPrivacyItems(privacy) {
+            console.log(privacy);
+            const plugin_container = document.getElementById('plugin-container');
+            privacy.forEach(item => {
+                const privacyItemDiv = document.createElement('div');
+                privacyItemDiv.className = 'privacy-item';
+                privacyItemDiv.innerHTML = `
+                <div>Confidence: ${item.confidence}</div>
+                <div>${item.privacy_info}</div>
+                `;
+                plugin_container.appendChild(privacyItemDiv);
+            });
+        }
 
         function displayMemoryItems(memorySuggestions, memoryList) {
             const plugin_container = document.getElementById('plugin-container');
@@ -338,42 +366,61 @@
             event.preventDefault(); // 阻止表单默认提交
             const messageInput = document.querySelector('input[name="message"]');
             const message = messageInput.value;
-            const xhr0 = new XMLHttpRequest();
-            xhr0.open("GET", "{{ url_for('get_memory') }}", true);
-            xhr0.onreadystatechange = function() {
-                if (xhr0.readyState === 4 && xhr0.status === 200) {
-                    console.log("Received memory response.");
-                    const response = JSON.parse(xhr0.responseText);
-                    // response.memory是字符串，需要转换为对象
-                    memoryList = JSON.parse(response.memory);
-                    console.log(memoryList);
-                    displayPastMemory(memoryList);
-                    const xhr = new XMLHttpRequest();
-                    const memory_type = Object.keys(memoryList).join(", ")
-                    xhr.open("POST", "{{ url_for('memory_evaluation') }}", true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === 4 && xhr.status === 200) {
-                            console.log("Received memory evaluation response.");
-                            const response = JSON.parse(xhr.responseText);
-                            console.log(response);
-                            const memorySuggestions = response.memory_suggestions;  // 假设这是个数组
+            // 推入message user
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user';
+            messageDiv.innerText = message;
+            messagesDiv.appendChild(messageDiv);
+            // const xhr0 = new XMLHttpRequest();
+            // xhr0.open("GET", "{{ url_for('get_memory') }}", true);
+            // xhr0.onreadystatechange = function() {
+            //     if (xhr0.readyState === 4 && xhr0.status === 200) {
+            //         console.log("Received memory response.");
+            //         const response = JSON.parse(xhr0.responseText);
+            //         // response.memory是字符串，需要转换为对象
+            //         memoryList = JSON.parse(response.memory);
+            //         console.log(memoryList);
+            //         displayPastMemory(memoryList);
+            //         const xhr = new XMLHttpRequest();
+            //         const memory_type = Object.keys(memoryList).join(", ")
+            //         xhr.open("POST", "{{ url_for('memory_evaluation') }}", true);
+            //         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            //         xhr.onreadystatechange = function() {
+            //             if (xhr.readyState === 4 && xhr.status === 200) {
+            //                 console.log("Received memory evaluation response.");
+            //                 const response = JSON.parse(xhr.responseText);
+            //                 console.log(response);
+            //                 const memorySuggestions = response.memory_suggestions;  // 假设这是个数组
 
-                            // 显示多个记忆条目
-                            displayMemoryItems(memorySuggestions, memoryList);
-                            highlightOriginalText(memorySuggestions, memoryList);
+            //                 // 显示多个记忆条目
+            //                 displayMemoryItems(memorySuggestions, memoryList);
+            //                 highlightOriginalText(memorySuggestions, memoryList);
 
-                            // 显示插件
-                            document.getElementById('plugin-container').style.display = 'block';
-                            document.getElementById('past-memory-container').style.display = 'block';
-                            document.getElementById('finish-button').style.display = 'block';
+            //                 // 显示插件
+            //                 document.getElementById('plugin-container').style.display = 'block';
+            //                 document.getElementById('past-memory-container').style.display = 'block';
+            //                 document.getElementById('finish-button').style.display = 'block';
                     
-                        }
-                    };
-                    xhr.send(`message=${encodeURIComponent(message)}&memory_type=${memory_type}`)
+            //             }
+            //         };
+            //         xhr.send(`message=${encodeURIComponent(message)}&memory_type=${memory_type}`)
+            //     }
+            // };
+            // xhr0.send(); 
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "{{ url_for('get_privacy') }}", true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log("Received privacy response.");
+                    // 返回的是字符串，需要转换为json对象
+                    const response = JSON.parse(xhr.responseText);
+                    displayPrivacyItems(response.privacy);
+                    document.getElementById('plugin-container').style.display = 'block';
                 }
-            };
-            xhr0.send();            
+            };     
+            xhr.send(`message=${encodeURIComponent(message)}`)      
             
         }
         document.getElementById('finish-button').onclick = function(event){
