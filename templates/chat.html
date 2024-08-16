@@ -323,9 +323,9 @@
                         `;
                         usedMemoryContainer.appendChild(usedMemoryDiv);
                     });
-
+                    highlightOriginalText(usedUserInput)
                     usedUserInput.forEach(userInput => {
-                        highlightOriginalText(usedUserInput)
+                        
                         const usedUserInputDiv = document.createElement('div');
                         usedUserInputDiv.innerHTML = `
                         <div>Used User Input:</div>
@@ -364,28 +364,36 @@
         }
 
         // 高亮文本
-        function highlightOriginalText(memorySuggestions, memoryList) {
-            // 找到最新发送的消息
-            let messageInput = document.querySelector('input[name="message"]');
-            let originalText = messageInput.value;
+        function highlightOriginalText(memorySuggestions) {
+            // memorySuggestions是一个数组，元素是字符串，要高亮的文本
+            // 找到最后一个用户输入框
+            let messageInput = document.getElementsByClassName('message user')[document.getElementsByClassName('message user').length - 1];
+            console.log(messageInput);
+            let originalText = messageInput.innerText;
             memorySuggestions.forEach(item => {
-                // let regex = new RegExp(`(${item.originalText})`, 'gi');
-                // 高亮匹配的文本
-                const type_info = item.type
-                let type_index = Object.keys(memoryList).indexOf(type_info)
-                console.log("type_index", type_index);
-                // 如果不存在，则新建一个颜色
-                if (type_index === -1) {
-                    type_index = Object.keys(memoryList).length
-                    colors.push(`#${Math.floor(Math.random()*16777215).toString(16)}`)
-                }
-                const color = colors[type_index]
-                originalText = originalText.replace(item.originalText, `<mark style="background-color: ${color};">${item.originalText}</mark>`);
+                originalText = originalText.replace(item, `<mark>${item}</mark>`);
             });
-            const plugin_container = document.getElementById('plugin-container');
-            const currentPrompt = document.createElement('div');
-            currentPrompt.innerHTML = originalText
-            plugin_container.appendChild(currentPrompt);
+            messageInput.innerHTML = originalText;
+            // memorySuggestions.forEach(item => {
+            //     // let regex = new RegExp(`(${item.originalText})`, 'gi');
+            //     // 高亮匹配的文本
+            //     const type_info = item.type
+            //     let type_index = Object.keys(memoryList).indexOf(type_info)
+            //     console.log("type_index", type_index);
+            //     // 如果不存在，则新建一个颜色
+            //     if (type_index === -1) {
+            //         type_index = Object.keys(memoryList).length
+            //         colors.push(`#${Math.floor(Math.random()*16777215).toString(16)}`)
+            //     }
+            //     const color = colors[type_index]
+            //     originalText = originalText.replace(item.originalText, `<mark style="background-color: ${color};">${item.originalText}</mark>`);
+            // });
+
+            // const plugin_container = document.getElementById('plugin-container');
+            // const currentPrompt = document.createElement('div');
+            // currentPrompt.innerHTML = originalText
+            // plugin_container.appendChild(currentPrompt);
+            
         }
 
 
