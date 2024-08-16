@@ -306,6 +306,35 @@
                 <div>${item.privacy_info}</div>
                 `;
                 plugin_container.appendChild(privacyItemDiv);
+                privacyItemDiv.addEventListener('click', () => {
+                    const pastUsedMemoryContainer = document.getElementById('used-memory-container');
+                    if (pastUsedMemoryContainer) {
+                        pastUsedMemoryContainer.remove();
+                    }
+                    const usedMemoryContainer = document.createElement('div');
+                    usedMemoryContainer.id = 'used-memory-container';
+                    usedMemory = item.used_memory
+                    usedUserInput = item.used_user_input
+                    usedMemory.forEach(memory => {
+                        const usedMemoryDiv = document.createElement('div');
+                        usedMemoryDiv.innerHTML = `
+                        <div>Used Memory:</div>
+                        <div>${memory}</div>
+                        `;
+                        usedMemoryContainer.appendChild(usedMemoryDiv);
+                    });
+
+                    usedUserInput.forEach(userInput => {
+                        highlightOriginalText(usedUserInput)
+                        const usedUserInputDiv = document.createElement('div');
+                        usedUserInputDiv.innerHTML = `
+                        <div>Used User Input:</div>
+                        <div>${userInput}</div>
+                        `;
+                        usedMemoryContainer.appendChild(usedUserInputDiv);
+                    });
+                    plugin_container.appendChild(usedMemoryContainer);
+                });
             });
         }
 
@@ -336,6 +365,7 @@
 
         // 高亮文本
         function highlightOriginalText(memorySuggestions, memoryList) {
+            // 找到最新发送的消息
             let messageInput = document.querySelector('input[name="message"]');
             let originalText = messageInput.value;
             memorySuggestions.forEach(item => {
