@@ -300,7 +300,7 @@
             });
         });
     }
-        function displayPrivacyItems(privacy) {
+        function displayPrivacyItems(privacy, message) {
             console.log(privacy);
             const plugin_container = document.getElementById('plugin-container');
             const privacyContainer = document.createElement('div');
@@ -350,13 +350,14 @@
                                 if (xhr.readyState === 4 && xhr.status === 200) {
                                     console.log("Received delete memory response.");
                                     const response = JSON.parse(xhr.responseText);
+                                    console.log(response);
                                     // 选择最后一个assistant的回复
                                     const assistantResponse = document.querySelectorAll('.message.assistant')[document.querySelectorAll('.message.assistant').length - 1];
-                                    const assistantResponseText = assistantResponse.innerText;
+                                    assistantResponse.innerText = response.response;
 
                                 }
                             };
-                            xhr.send(`memory=${memory}&chat_name={{ selected_chat }}`)
+                            xhr.send(`message=${encodeURIComponent(message)}&memory=${memory}&chat_name={{ selected_chat }}`)
                     });
                     });
 
@@ -495,7 +496,7 @@
                     console.log("Received privacy response.");
                     // 返回的是字符串，需要转换为json对象
                     const response = JSON.parse(xhr0.responseText);
-                    displayPrivacyItems(response.privacy);
+                    displayPrivacyItems(response.privacy, message)
                     document.getElementById('plugin-container').style.display = 'block';
                 }
             };     

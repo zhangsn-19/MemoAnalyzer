@@ -1,14 +1,81 @@
 shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
-assistant: In Study 1, we evaluated perceived gains and losses across three typical take-over tasks with varying levels of safety risk as outlined in Route Selection~\cite{sheng2021trust}.
-shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
-assistant: In Study 1, we quantified perceived gains and losses in three typical take-over tasks, each varying in safety risk, using the Route Selection method~\cite{sheng2021trust}.
-shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
-assistant: Certainly! Here's a more concise and clear version of the text:
+assistant: In Study 1, we assessed perceived gains and losses in three typical take-over tasks characterized by varying levels of safety risk, as per the framework in Route Selection~\cite{sheng2021trust}.
+shuningz2: 
+assistant: 了解您的采访需求，以下是您可以参考的结构化信息和调查问卷样本，帮助更好地收集和分析老年人在高温期间的健康风险信息。
 
-"In Study 1, we assessed perceived gains and losses across three typical take-over tasks, each associated with different safety risks, as described in Route Selection~\cite{sheng2021trust}."
-shuningz2: 111
-assistant: 你提到的“111”不在我存储的记忆信息内。如果你需要有关具体问题的信息或帮助，请提供更多的上下文说明，以便我更好地为你解答。
-shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
-assistant: In Study 1, we assessed perceived gains and losses across three types of typical take-over tasks associated with varying safety risks, as described in the Route Selection study by Sheng et al. (2021).
-shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
-assistant: In Study 1, we assessed perceived gain and loss in three types of typical take-over tasks with varying safety risks: Route Selection~\cite{sheng2021trust}.
+### 信息收集框架
+
+#### 空间维度：
+1. **室内测量：**
+   - 家庭降温措施：是否有空调、电风扇、湿帘等降温设备。
+   - 空调使用情况：平均每天空调使用时间，设定温度等。
+   - 家庭节能措施：遮阳帘、绿植等。
+
+2. **室外测量：**
+   - 老年人居住在城市、郊区还是农村。
+   - 周围环境温度：夏季高温时段的室外温度。
+   - 社区凉棚和公共空调场所的利用情况。
+
+3. **优化空调承载能力措施：**
+   - 政府和社区提供的降温支持，例如补贴或免费电量。
+
+4. **城市网络措施：**
+   - 当地政府提供的高温预警通讯。
+   - 社区志愿者上门检查慰问。
+
+#### 时间维度：
+1. **热浪前准备阶段：**
+   - 是否收到高温预警信息。
+   - 是否有未雨绸缪的措施，比如提前购置降温设备。
+
+2. **热浪响应阶段：**
+   - 高温期间的日常活动调整，比如减少户外运动。
+   - 亲友或者志愿者的探视情况。
+
+3. **热波恢复阶段：**
+   - 老年人健康状况的自我评估。
+   - 降温设备的维护和再次使用计划。
+
+### 调查问卷样本
+
+#### 基本信息：
+1. **收入状况：**
+   - 家庭月收入：_____
+   - 收入来源：退休金、子女支持、其他：_____
+
+2. **居住地点：**
+   - 城市 | 郊区 | 农村
+   - 住房类型：公寓 | 独立住宅 | 老年社区
+
+#### 日常活动：
+1. 高温期间，您的主要活动场所是：
+   - 室内
+   - 室外
+
+2. 典型的一天中，您会从事哪些活动？（多选）
+   - 读书 | 做饭 | 运动 | 看电视 | 打电话 | 其他：_____
+
+#### 室内降温措施：
+1. 您家中是否有以下降温设备？（多选）
+   - 空调
+   - 电风扇
+   - 湿帘
+   - 其他：_____
+
+2. 您平均每天使用空调的时间是：_____
+
+3. 空调的设定温度是多少？白天：____ °C  夜晚：____ °C
+
+#### 高温期间的响应和支持：
+1. 您是否收到了高温预警信息？如何收到的？
+   - 是 | 否
+   - 短信 | 社区广播 | 其他：_____
+
+2. 您是否调整了日常活动以应对高温？
+   - 是 | 否
+   - 调整内容：_____
+
+3. 高温期间，您家中是否有人探望或给予帮助？
+   - 是 | 否
+
+这份结构化的信息框架和样本调查问卷可以帮助有效采集和分析高温期间老年人面临的健康风险，进而为后续的研究和政策建议提供切实依据。通过 EnergyPlus 模型进一步分析这些数据，还能为优化老年人居住环境的节能和舒适度提出专业解决方案。

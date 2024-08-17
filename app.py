@@ -349,7 +349,7 @@ def get_privacy():
     # memory 是个数组, 元素是字符串
     with open(f'{current_user.username}_memory.json', 'r') as f:
         memory = json.loads(f.read())
-    memory = " ".join(memory)
+    memory = "\n".join(memory)
     message = request.form.get('message')
     prompt = '''
         Please review the following text and decide if it can infer to any personal or sensitive information.
@@ -439,11 +439,9 @@ def delete_memory():
     print("Processing chat message")
     chat_name = request.form.get('chat_name', '')
     message = request.form.get('message', '')
-    with open(f"{current_user.username}_memory.json", "r") as f:
-        memory = json.loads(f.read())
     
-    memory = "\n".join(memory)
-    print(memory)
+    memory_item = '\n'.join(memoryList)
+    print(memory_item)
     chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
     log_message("user", message)
     save_message_to_file(chat_file, current_user.username, message)
@@ -452,7 +450,7 @@ def delete_memory():
     bot_response = generate_response([
         {"role": "system", "content": "Answer user's question with the following memories."},
         {"role": "user", "content": message},
-        {"role": "assistant", "content": "You can use these memories to answer user's question: "+memory}
+        {"role": "assistant", "content": "You can use these memories to answer user's question: "+memory_item}
     ])
     print(f"Bot response: {bot_response}")
     log_message("assistant", bot_response)
