@@ -500,29 +500,17 @@
 
             const xhr = new XMLHttpRequest();
             event.preventDefault(); 
-            xhr.open("POST", "{{ url_for('chat') }}", true);
+            xhr.open("POST", "{{ url_for('chatbot') }}", true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     console.log("Received chat response.");
-                    const response = JSON.parse(xhr.responseText);
-                    const conversation = response.conversation;  // 假设这是个数组
+                    const response = JSON.parse(xhr.responseText).response;
 
-                    // 更新聊天框
-                    const messagesDiv = document.getElementById('messages');
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = 'message user';
-                    messageDiv.innerText = message;
-                    messagesDiv.appendChild(messageDiv);
-
-                    conversation.forEach(item => {
                         const messageDiv = document.createElement('div');
                         messageDiv.className = 'message assistant';
-                        messageDiv.innerText = item;
+                        messageDiv.innerText = response;
                         messagesDiv.appendChild(messageDiv);
-                    });
-                    console.log("conversation", conversation);
-                    console.log(messagesDiv);
                     
                 }
             };

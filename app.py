@@ -256,6 +256,35 @@ def save_memory(user_id, phrase, action):
         elif action == "modify":
             f.write(f"Memory modified: {phrase}\n")
 
+
+@app.route('/chatbot', methods=['POST'])
+@login_required
+def chatbot():
+    print("Processing chat message")
+    chat_name = request.form.get('chat_name', '')
+    message = request.form.get('message', '')
+    with open(f"{current_user.username}_memory.json", "r") as f:
+        memory = json.loads(f.read())
+    
+    memory = "\n".join(memory)
+    print(memory)
+    if chat_name and message:
+        chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
+        log_message("user", message)
+        save_message_to_file(chat_file, current_user.username, message)
+
+        # 生成响应
+        bot_response = generate_response([
+            {"role": "system", "content": "Answer user's question with the following memories."},
+            {"role": "user", "content": message},
+            {"role": "assistant", "content": "You can use these memories to answer user's question: "+memory}
+        ])
+        print(f"Bot response: {bot_response}")
+        log_message("assistant", bot_response)
+        save_message_to_file(chat_file, "assistant", bot_response)
+
+    return jsonify({'response': bot_response})
+
 @app.route('/chat', methods=['GET', 'POST'])
 @login_required
 def chat():
