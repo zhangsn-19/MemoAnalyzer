@@ -107,10 +107,8 @@
             top: 10px;
             right: 10px;
             width: 300px;
-            background: white;
-            border: 1px solid #ccc;
             border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            
             z-index: 1000;
             padding: 15px;
         }
@@ -118,12 +116,19 @@
             width: 30px;
             height: 30px;
         }
-        .privacy-item{
+        #privacy-container, #used-memory-container {
             margin-bottom: 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
         }
         .privacy-item:hover{
             background-color: #DCF8C0
         }
+        
     </style>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async
@@ -131,7 +136,7 @@
     </script>
 </head>
 <body>
-    <div id="plugin-container" style="display:none; max-height: 700px; overflow-y:auto; top:50px; left:50px; width:300px; padding:20px; background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">
+    <div id="plugin-container" style="display:none; max-height: 700px; overflow-y:auto; top:50px; left:50px; width:300px; padding:20px;">
         <!-- Memory Generation Stage -->
     </div>
     <div id="new-memory-container" style="display:none; position:fixed; top:50px; right:450px; width:500px; padding:20px; z-index: 999;background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">
@@ -298,6 +303,8 @@
         function displayPrivacyItems(privacy) {
             console.log(privacy);
             const plugin_container = document.getElementById('plugin-container');
+            const privacyContainer = document.createElement('div');
+            privacyContainer.id = 'privacy-container';
             privacy.forEach(item => {
                 const privacyItemDiv = document.createElement('div');
                 privacyItemDiv.className = 'privacy-item';
@@ -305,7 +312,7 @@
                 <div>Confidence: ${item.confidence}</div>
                 <div>${item.privacy_info}</div>
                 `;
-                plugin_container.appendChild(privacyItemDiv);
+                privacyContainer.appendChild(privacyItemDiv);
                 privacyItemDiv.addEventListener('click', () => {
                     const pastUsedMemoryContainer = document.getElementById('used-memory-container');
                     if (pastUsedMemoryContainer) {
@@ -319,10 +326,37 @@
                         const usedMemoryDiv = document.createElement('div');
                         usedMemoryDiv.innerHTML = `
                         <div>Used Memory:</div>
-                        <div>${memory}</div>
+                        <span>${memory}</span>
+                        <svg width="30px" height="30px" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.125 2.125V10H8.875V2.125H2.125Z" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linejoin="round"/>
+<path d="M4.375 4.375V7.75" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6.625 4.375V7.75" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1 2.125H10" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3.8125 2.125L4.50627 1H6.50767L7.1875 2.125H3.8125Z" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linejoin="round"/>
+</svg>
+
+
                         `;
                         usedMemoryContainer.appendChild(usedMemoryDiv);
+                        usedMemoryDiv.querySelector('svg').addEventListener('click', () => {
+                            usedMemory = usedMemory.filter(memoryItem => memoryItem !== memory);
+                            item.used_memory = usedMemory;
+
+                            usedMemoryDiv.remove();
+                            const xhr = new XMLHttpRequest();
+                            xhr.open("POST", "{{ url_for('delete_memory') }}", true);
+                            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                            xhr.onreadystatechange = function() {
+                                if (xhr.readyState === 4 && xhr.status === 200) {
+                                    console.log("Received delete memory response.");
+                                    const response = JSON.parse(xhr.responseText);
+                                    console.log(response);
+                                }
+                            };
+                            xhr.send(`memory=${memory}`)
                     });
+                    });
+
                     highlightOriginalText(usedUserInput)
                     usedUserInput.forEach(userInput => {
                         
@@ -336,6 +370,9 @@
                     plugin_container.appendChild(usedMemoryContainer);
                 });
             });
+
+            plugin_container.appendChild(privacyContainer);
+            
         }
 
         function displayMemoryItems(memorySuggestions, memoryList) {
@@ -446,19 +483,50 @@
             //     }
             // };
             // xhr0.send(); 
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "{{ url_for('get_privacy') }}", true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
+            
+            const xhr0 = new XMLHttpRequest();
+            xhr0.open("POST", "{{ url_for('get_privacy') }}", true);
+            xhr0.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr0.onreadystatechange = function() {
+                if (xhr0.readyState === 4 && xhr0.status === 200) {
                     console.log("Received privacy response.");
                     // 返回的是字符串，需要转换为json对象
-                    const response = JSON.parse(xhr.responseText);
+                    const response = JSON.parse(xhr0.responseText);
                     displayPrivacyItems(response.privacy);
                     document.getElementById('plugin-container').style.display = 'block';
                 }
             };     
-            xhr.send(`message=${encodeURIComponent(message)}`)      
+            xhr0.send(`message=${encodeURIComponent(message)}`)
+
+            const xhr = new XMLHttpRequest();
+            event.preventDefault(); 
+            xhr.open("POST", "{{ url_for('chat') }}", true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log("Received chat response.");
+                    const response = JSON.parse(xhr.responseText);
+                    const conversation = response.conversation;  // 假设这是个数组
+
+                    // 更新聊天框
+                    const messagesDiv = document.getElementById('messages');
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message user';
+                    messageDiv.innerText = message;
+                    messagesDiv.appendChild(messageDiv);
+
+                    conversation.forEach(item => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'message assistant';
+                        messageDiv.innerText = item;
+                        messagesDiv.appendChild(messageDiv);
+                    });
+                    console.log("conversation", conversation);
+                    console.log(messagesDiv);
+                    
+                }
+            };
+            xhr.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}`)      
             
         }
         document.getElementById('finish-button').onclick = function(event){
@@ -501,37 +569,7 @@
             document.getElementById('plugin-container').style.display = 'none';       
             document.getElementById('past-memory-container').style.display = 'none';
             document.getElementById('finish-button').style.display = 'none';
-            const xhr = new XMLHttpRequest();
-            const messageInput = document.querySelector('input[name="message"]');
-            const message = messageInput.value;
-            event.preventDefault(); 
-            xhr.open("POST", "{{ url_for('chat') }}", true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    console.log("Received chat response.");
-                    const response = JSON.parse(xhr.responseText);
-                    console.log(response);
-                    const conversation = response.conversation;  // 假设这是个数组
-
-                    // 更新聊天框
-                    const messagesDiv = document.getElementById('messages');
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = 'message user';
-                    messageDiv.innerText = message;
-                    messagesDiv.appendChild(messageDiv);
-
-                    conversation.forEach(item => {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'message assistant';
-                        messageDiv.innerText = item;
-                        messagesDiv.appendChild(messageDiv);
-                    });
-                    
-                }
-                location.reload()
-            };
-            xhr.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}&memory=${checkedMemories}`)
+            
                     
             }
         // 双击修改原始文本

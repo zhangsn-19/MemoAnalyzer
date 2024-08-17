@@ -1,2 +1,8 @@
 shuningz2: I would like to chat about you, and you, and you
 assistant: Sure, I'd be happy to chat! When you say "you," are you referring to me, the AI, or are you looking to discuss multiple aspects or functionalities? Let me know how I can best engage with you!
+shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
+assistant: Here is a revised version:
+
+"In Study 1, perceived gains and losses were measured across three typical take-over tasks with varying safety risks, as detailed in Route Selection~\cite{sheng2021trust}."
+shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
+assistant: Study 1 measured perceived gain and loss in three typical take-over tasks with varying safety risks: Route Selection~\cite{sheng2021trust}.

@@ -278,8 +278,11 @@ def chat():
             print("Processing chat message")
             chat_name = request.form.get('chat_name', '')
             message = request.form.get('message', '')
-            memory = request.form.get('memory', '')
-
+            with open(f"{current_user.username}_memory.json", "r") as f:
+                memory = json.loads(f.read())
+            
+            memory = "\n".join(memory)
+            print(memory)
             if chat_name and message:
                 chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
                 log_message("user", message)
@@ -287,10 +290,11 @@ def chat():
 
                 # 生成响应
                 bot_response = generate_response([
-                    {"role": "system", "content": "Your system prompt goes here"},
+                    {"role": "system", "content": "Answer user's question with the following memories."},
                     {"role": "user", "content": message},
                     {"role": "assistant", "content": "You can use these memories to answer user's question: "+memory}
                 ])
+                print(f"Bot response: {bot_response}")
                 log_message("assistant", bot_response)
                 save_message_to_file(chat_file, "assistant", bot_response)
 
@@ -383,15 +387,26 @@ def get_privacy():
     )
     # 解析成json
     privacy = response.choices[0].message.content
-    print("res",privacy)
+    # print("res",privacy)
     first_bracket = privacy.find("[")   
     last_bracket = privacy.rfind("]")
     privacy = privacy[first_bracket:last_bracket+1]
-    print(privacy)
+    # print(privacy)
     # text to json
     privacy = json.loads(privacy)
 
     return jsonify({'privacy': privacy})
+
+@app.route('/delete_memory', methods=['POST'])
+@login_required
+def delete_memory():
+    memory = request.form.get('memory')
+    with open(f"{current_user.username}_memory.json", "r") as f:
+        memoryList = json.loads(f.read())
+    memoryList.remove(memory)
+    with open(f"{current_user.username}_memory.json", "w", encoding='utf-8') as f:
+        f.write(json.dumps(memoryList, ensure_ascii=False, indent=4))
+    return jsonify({'status': 'success'})
     
 
 @app.route('/clear', methods=['POST'])
