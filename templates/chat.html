@@ -520,32 +520,6 @@
             };
             xhr.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}`)      
             messageInput.value = '';
-        }
-        document.getElementById('finish-button').onclick = function(event){
-            let checkedMemories = [];
-            document.querySelectorAll('.memory-item input[type="checkbox"]:checked').forEach(checkbox => {
-                let memory = checkbox.nextElementSibling.innerText;
-                checkedMemories.push(memory);
-            });
-            console.log(checkedMemories)
-            checkedMemories = checkedMemories.join("; ")
-
-            let checkboxes = document.querySelectorAll('#memory-stage input[type="checkbox"]');
-            checkboxes.forEach(function(checkbox) {
-                var parent = checkbox.parentElement;
-                var type = parent.querySelector('.type').textContent;
-                var memoryText = parent.querySelector('.phrase').textContent;
-                if (checkbox.checked) {
-                    if(memoryList[type]){
-                        memoryList[type].push(memoryText);
-                    }
-                    else{
-                        memoryList[type] = [memoryText];
-                    }
-                }
-            });
-            console.log(memoryList);
-            console.log(JSON.stringify(memoryList)); 
             const xhr1 = new XMLHttpRequest();
             xhr1.open("POST", "{{ url_for('update_memory') }}", true);
             xhr1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -556,14 +530,52 @@
                     console.log(response);
                 }
             };
-            xhr1.send(`memory=${JSON.stringify(memoryList)}`)
-            // 隐藏
-            document.getElementById('plugin-container').style.display = 'none';       
-            document.getElementById('past-memory-container').style.display = 'none';
-            document.getElementById('finish-button').style.display = 'none';
+            xhr1.send(`message=${encodeURIComponent(message)}`)
+
+        }
+        // document.getElementById('finish-button').onclick = function(event){
+        //     let checkedMemories = [];
+        //     document.querySelectorAll('.memory-item input[type="checkbox"]:checked').forEach(checkbox => {
+        //         let memory = checkbox.nextElementSibling.innerText;
+        //         checkedMemories.push(memory);
+        //     });
+        //     console.log(checkedMemories)
+        //     checkedMemories = checkedMemories.join("; ")
+
+        //     let checkboxes = document.querySelectorAll('#memory-stage input[type="checkbox"]');
+        //     checkboxes.forEach(function(checkbox) {
+        //         var parent = checkbox.parentElement;
+        //         var type = parent.querySelector('.type').textContent;
+        //         var memoryText = parent.querySelector('.phrase').textContent;
+        //         if (checkbox.checked) {
+        //             if(memoryList[type]){
+        //                 memoryList[type].push(memoryText);
+        //             }
+        //             else{
+        //                 memoryList[type] = [memoryText];
+        //             }
+        //         }
+        //     });
+        //     console.log(memoryList);
+        //     console.log(JSON.stringify(memoryList)); 
+        //     const xhr1 = new XMLHttpRequest();
+        //     xhr1.open("POST", "{{ url_for('update_memory') }}", true);
+        //     xhr1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        //     xhr1.onreadystatechange = function() {
+        //         if (xhr1.readyState === 4 && xhr1.status === 200) {
+        //             console.log("Received memory update response.");
+        //             const response = JSON.parse(xhr1.responseText);
+        //             console.log(response);
+        //         }
+        //     };
+        //     xhr1.send(`memory=${JSON.stringify(memoryList)}`)
+        //     // 隐藏
+        //     document.getElementById('plugin-container').style.display = 'none';       
+        //     document.getElementById('past-memory-container').style.display = 'none';
+        //     document.getElementById('finish-button').style.display = 'none';
             
                     
-            }
+        //     }
         // 双击修改原始文本
         function modifyOriginalText(index) {
             const messageInput = document.querySelector('input[name="message"]');

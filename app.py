@@ -239,11 +239,61 @@ def get_memory():
 @app.route('/update_memory', methods=['GET', 'POST'])
 @login_required
 def update_memory():
-    memory = request.form.get('memory')
-    print(f"Received memory: {memory}")
-    with open(f"{current_user.username}_memory.json", "w") as f:
-        f.write(memory)
-    return jsonify({'status': 'success'})
+    message = request.form.get('message')
+    prompt = '''
+    You need to extract explicit information provided by the user: Any explicit information that users tell you to remember. For example:
+
+    The user's name, birthday, hobbies, and so on.
+    Specific events, important dates, or projects.
+    Personal preferences, such as favorite colors, foods, books, etc.
+    Contextual information from the conversation: Sometimes, information that continuously appears in the conversation may also be recorded by you to help provide a more continuous conversational experience. For example:
+
+    The project the user is dealing with or the course they are studying.
+    Interests or concerns the user has recently mentioned.
+    Criteria for judgement:
+
+    Explicit remember request: When a user explicitly asks you to remember certain information, you prioritize recording it. For example, "Please remember my favorite book is '1984'".
+    Continuity and relevance of the conversation: If certain information repeatedly appears in multiple conversations and is helpful in providing better answers, you might automatically remember this information.
+    Importance and personal relevance: More important or personalized information, such as birthdays or important projects, are prioritized for recording.
+    Updating Memories:
+
+    Explicit user update request: Users can explicitly request to update information. For example, "My favorite book has changed to 'Brave New World'".
+    Corrections in the conversation: If new information is provided in the conversation to correct previous information, you will update the record. For example, if you previously remembered that the user's favorite color is blue, but they later tell you they prefer green, you will update this information.
+    Time-related information: Some information may need to be updated over time, such as the user's project progress or learning courses.
+    
+    Output Format:
+    ['information ...',  '...', ...]
+
+    If there is no information to remember, please output an empty list.
+    
+    '''
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages = [
+            {"role": "user", "content": message},
+            {"role": "system", "content": prompt}
+        ]
+    )
+    print(response.choices[0].message.content)
+    first_bracket = response.choices[0].message.content.find("[")
+    last_bracket = response.choices[0].message.content.rfind("]")
+    memory = response.choices[0].message.content[first_bracket:last_bracket+1]
+    # 字符串变成数组
+    import ast
+    memory = ast.literal_eval(memory)
+    previous_memory = []
+    with open(f"{current_user.username}_memory.json", "r") as f:
+        previous_memory = json.loads(f.read())
+    print(previous_memory)
+    # 数组合并
+    memory = list(set(memory + previous_memory))
+    print(memory)
+    with open(f"{current_user.username}_memory.json", "w", encoding='utf-8') as f:
+        f.write(json.dumps(memory, ensure_ascii=False, indent=4))
+    return jsonify({'memory': memory})
+
+
+    
 
 if not os.path.exists(MEMORY_DIR):
     os.makedirs(MEMORY_DIR)
