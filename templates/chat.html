@@ -350,10 +350,13 @@
                                 if (xhr.readyState === 4 && xhr.status === 200) {
                                     console.log("Received delete memory response.");
                                     const response = JSON.parse(xhr.responseText);
-                                    console.log(response);
+                                    // 选择最后一个assistant的回复
+                                    const assistantResponse = document.querySelectorAll('.message.assistant')[document.querySelectorAll('.message.assistant').length - 1];
+                                    const assistantResponseText = assistantResponse.innerText;
+
                                 }
                             };
-                            xhr.send(`memory=${memory}`)
+                            xhr.send(`memory=${memory}&chat_name={{ selected_chat }}`)
                     });
                     });
 
@@ -515,7 +518,7 @@
                 }
             };
             xhr.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}`)      
-            
+            messageInput.value = '';
         }
         document.getElementById('finish-button').onclick = function(event){
             let checkedMemories = [];
