@@ -264,6 +264,7 @@ def update_memory():
     Output Format:
     ['information ...',  '...', ...]
 
+    MUST OBEY THE OUTPUT FORMAT.
     If there is no information to remember, please output an empty list.
     
     '''
@@ -278,6 +279,7 @@ def update_memory():
     first_bracket = response.choices[0].message.content.find("[")
     last_bracket = response.choices[0].message.content.rfind("]")
     memory = response.choices[0].message.content[first_bracket:last_bracket+1]
+    print(memory)
     # 字符串变成数组
     import ast
     memory = ast.literal_eval(memory)

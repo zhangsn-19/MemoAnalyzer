@@ -16,3 +16,5 @@ assistant: 我看到了以下信息，希望能帮助回答你的问题：
 6. **宿舍楼能耗研究**：你正在进行一项关于宿舍楼能耗（主要是电力）与用户行为的研究。
 
 请告诉我你想了解的具体问题是什么？这样我可以更好地利用这些信息来回答。
+shuningz2: 请帮我用学术、严谨、标准、简练的英文润色这段文本，要尽量保持原意但是要尽量简练，要表述清晰避免歧义，不要有任何歧义：”””Study 1, we measured perceived gain and loss in three types of typical take-over tasks with different safety risk: Route Selection~\cite{sheng2021trust},“”“
+assistant: In Study 1, we measured perceived gains and losses associated with three types of typical take-over tasks, each varying in safety risk: Route Selection~\cite{sheng2021trust}.
