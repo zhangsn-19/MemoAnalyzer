@@ -275,12 +275,18 @@ def update_memory():
             {"role": "system", "content": prompt}
         ]
     )
+    print("==================== MEMORY ================== \n")
     print(response.choices[0].message.content)
+    print("============================================== \n")
     first_bracket = response.choices[0].message.content.find("[")
     last_bracket = response.choices[0].message.content.rfind("]")
     memory = response.choices[0].message.content[first_bracket:last_bracket+1]
+    print("==================== MEMORY UPDATE ================== \n")
     print(memory)
+    print("===================================================== \n")
     # 字符串变成数组
+    if memory == "[]":
+        return jsonify({'memory': []})
     import ast
     memory = ast.literal_eval(memory)
     previous_memory = []
@@ -459,6 +465,9 @@ def get_privacy():
     prompt += f"- User's prompt: {message}\n"
     prompt += f"- Memory: {memory}\n"
     prompt += "please output the privacy_info, confidence, used_user_input, and used_memory."
+    print("================================ \n")
+    print(prompt)
+    print("================================ \n")
     response = client.chat.completions.create(
         model="gpt-4o",
         messages = [
@@ -468,6 +477,14 @@ def get_privacy():
     )
     # 解析成json
     privacy = response.choices[0].message.content
+    print("============== privacy ==============\n")
+    print(privacy)
+    print("=====================================\n")
+    with open(f"{current_user.username}_privacy.json", "a") as f:
+        f.write("=======================================\n")
+        f.write(str(time.time()) + "\n")
+        f.write(str(privacy) + "\n")
+        f.write("=======================================\n")
     # print("res",privacy)
     first_bracket = privacy.find("[")   
     last_bracket = privacy.rfind("]")
