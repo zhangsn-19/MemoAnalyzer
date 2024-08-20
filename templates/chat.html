@@ -359,7 +359,22 @@
                                     // 选择最后一个assistant的回复
                                     const assistantResponse = document.querySelectorAll('.message.assistant')[document.querySelectorAll('.message.assistant').length - 1];
                                     assistantResponse.innerText = response.response;
-
+                                    const xhr1 = new XMLHttpRequest();
+                                    xhr1.open("POST", "{{ url_for('get_privacy') }}", true);
+                                    xhr1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                                    xhr1.onreadystatechange = function() {
+                                        if (xhr1.readyState === 4 && xhr1.status === 200) {
+                                            console.log("Received privacy response.");
+                                            // 返回的是字符串，需要转换为json对象
+                                            const response = JSON.parse(xhr1.responseText);
+                                            const pastUsedMemoryContainer = document.getElementById('used-memory-container');
+                                            if (pastUsedMemoryContainer) {
+                                                pastUsedMemoryContainer.remove();
+                                            }
+                                            displayPrivacyItems(response.privacy, message)
+                                        }
+                                    };
+                                    xhr1.send(`message=${encodeURIComponent(message)}`)
                                 }
                             };
                             xhr.send(`message=${encodeURIComponent(message)}&memory=${memory}&chat_name={{ selected_chat }}`)
