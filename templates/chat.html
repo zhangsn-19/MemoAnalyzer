@@ -296,23 +296,24 @@
             });
         });
     }
-        function displayPrivacyItems(privacy, message) {
-            console.log(privacy);
-            const data = {
-    "Personal Basic Information": 4.240,
-    "Personal Identity Information": 5.790,
-    "Online Identity Identifier Information": 5.878,
-    "Personal Health Status and Physiological Information": 4.768,
-    "Personal Exercise Information": 3.327,
-    "Personal Education and Work Information": 5.069,
-    "Personal Property Information": 5.619,
-    "Identity Verification Information": 5.966,
-    "Personal Communication Information": 5.188,
-    "Contacts Information": 5.110,
-    "Personal Internet Browsing History": 5.122,
-    "Personal Location Information": 4.398,
-    "Other Personal Information": 3.946
-};
+
+    function displayPrivacyItems(privacy, message) {
+        console.log(privacy);
+        const data = {
+            "Personal Basic Information": 4.240,
+            "Personal Identity Information": 5.790,
+            "Online Identity Identifier Information": 5.878,
+            "Personal Health Status and Physiological Information": 4.768,
+            "Personal Exercise Information": 3.327,
+            "Personal Education and Work Information": 5.069,
+            "Personal Property Information": 5.619,
+            "Identity Verification Information": 5.966,
+            "Personal Communication Information": 5.188,
+            "Contacts Information": 5.110,
+            "Personal Internet Browsing History": 5.122,
+            "Personal Location Information": 4.398,
+            "Other Personal Information": 3.946
+        };
 
 // // Function to map a value from 1-7 to a color from red (255, 0, 0) to black (0, 0, 0)
 // function getColorForValue(value) {
@@ -325,329 +326,316 @@
 //     return `rgb(${red}, ${green}, ${blue})`;
 // }
 
-            const plugin_container = document.getElementById('plugin-container');
-            // 如果存在privacy-container，则删除
-            const pastPrivacyContainer = document.getElementById('privacy-container');
-            if (pastPrivacyContainer) {
-                pastPrivacyContainer.remove();
+        const plugin_container = document.getElementById('plugin-container');
+        // 如果存在privacy-container，则删除
+        const pastPrivacyContainer = document.getElementById('privacy-container');
+        if (pastPrivacyContainer) {
+            pastPrivacyContainer.remove();
+        }
+        function getGradientColor(alpha, opacity) {
+            // 确保alpha在0到1之间
+            alpha = Math.max(0, Math.min(1, alpha));
+
+            // 纯蓝色：rgb(0, 0, 255)
+            // 纯红色：rgb(255, 0, 0)
+
+            // 计算红色分量
+            const red = Math.round(255 + (1 - alpha) * (109 - 255));
+            // 蓝色分量随alpha变化而变化
+            const green = Math.round(117 + (1 - alpha) * (172 - 117));
+            const blue = Math.round(117 + (1 - alpha) * (255 - 117));
+
+            // 返回CSS格式的颜色字符串
+            return `rgb(${red}, ${green}, ${blue}, ${opacity})`;
+        }
+        const privacyContainer = document.createElement('div');
+        privacyContainer.id = 'privacy-container';
+        privacy.forEach(item => {
+            let meanValue = 0;
+            if (data.hasOwnProperty(item.type)) {
+                meanValue = data[item.type];
             }
-            function getGradientColor(alpha, opacity) {
-                // 确保alpha在0到1之间
-                alpha = Math.max(0, Math.min(1, alpha));
 
-                // 纯蓝色：rgb(0, 0, 255)
-                // 纯红色：rgb(255, 0, 0)
-
-                // 计算红色分量
-                const red = Math.round(255 * alpha);
-                // 蓝色分量随alpha变化而变化
-                const blue = Math.round(255 * (1 - alpha));
-
-                // 返回CSS格式的颜色字符串
-                return `rgb(${red}, 0, ${blue}, ${opacity})`;
-            }
-            const privacyContainer = document.createElement('div');
-            privacyContainer.id = 'privacy-container';
-            privacy.forEach(item => {
-                let meanValue = 0;
-                if (data.hasOwnProperty(item.type)) {
-                    meanValue = data[item.type];
-                }
-
-                let confidenceString = item.confidence || "100%"; // 如果没有置信度，默认是100%
-                let confidence = parseFloat(confidenceString.replace('%', '')) || 100; // 转换为数字，去掉百分号，如果转换失败则为100
-                const opacity = (confidence - 60) / 40; // 根据置信度设置透明度
-                // const colorIntensity = Math.floor(255 * (1 - opacity)); // 根据置信度设置颜色强度
-                
-                const normalizedValue = (meanValue - 3.5) / (6.5 - 3.5);
-                const backgroundColor = getGradientColor(normalizedValue, opacity)
-
-                const privacyItemDiv = document.createElement('div');
-                privacyItemDiv.className = 'privacy-item';
-                privacyItemDiv.style.backgroundColor = backgroundColor; // 设置背景颜色
-                // privacyItemDiv.style.color = color;
-                privacyItemDiv.style.opacity = opacity; // 设置透明度
-                privacyItemDiv.style.border = `1px solid rgba(255, 255, 153, ${opacity})`; // 设置边框颜色和透明度
-                privacyItemDiv.style.padding = "10px"; // 增加一些填充来让边框更明显
-                privacyItemDiv.style.borderRadius = "5px"; // 圆角边框
-                console.log(backgroundColor, opacity);
-                privacyItemDiv.innerHTML = `
-                <div>Confidence: ${item.confidence}</div>
-                <div>${item.privacy_info}</div>
-                `;
-                privacyContainer.appendChild(privacyItemDiv);
-                privacyItemDiv.addEventListener('click', () => {
-                    const pastUsedMemoryContainer = document.getElementById('used-memory-container');
-                    if (pastUsedMemoryContainer) {
-                        pastUsedMemoryContainer.remove();
-                    }
-                    const usedMemoryContainer = document.createElement('div');
-                    usedMemoryContainer.id = 'used-memory-container';
-                    const usedMemory = item.used_memory;
-                    const usedUserInput = item.used_user_input;
-                    usedMemory.forEach(memory => {
-                        const highlightedMemory = highlightText(memory.full, memory.shortened);
+            let confidenceString = item.confidence || "100%"; // 如果没有置信度，默认是100%
+            let confidence = parseFloat(confidenceString.replace('%', '')) || 100; // 转换为数字，去掉百分号，如果转换失败则为100
+            const opacity = (confidence - 60) / 40; // 根据置信度设置透明度
+            // const colorIntensity = Math.floor(255 * (1 - opacity)); // 根据置信度设置颜色强度
             
-                        const usedMemoryDiv = document.createElement('div');
-                        usedMemoryDiv.innerHTML = `
-                        <div>Used Memory:</div>
-                        <span>${highlightedMemory}</span>
-                        <svg width="30px" height="30px" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+            const normalizedValue = (meanValue - 3.5) / (6.5 - 3.5);
+            const backgroundColor = getGradientColor(normalizedValue, opacity)
+
+            const privacyItemDiv = document.createElement('div');
+            privacyItemDiv.className = 'privacy-item';
+            privacyItemDiv.style.backgroundColor = backgroundColor; // 设置背景颜色
+            // privacyItemDiv.style.color = color;
+            privacyItemDiv.style.opacity = opacity; // 设置透明度
+            privacyItemDiv.style.border = `1px solid rgba(255, 255, 153, ${opacity})`; // 设置边框颜色和透明度
+            privacyItemDiv.style.padding = "10px"; // 增加一些填充来让边框更明显
+            privacyItemDiv.style.borderRadius = "5px"; // 圆角边框
+            console.log(backgroundColor, opacity);
+            privacyItemDiv.innerHTML = `
+            <div>Confidence: ${item.confidence}</div>
+            <div>${item.privacy_info}</div>
+            `;
+            privacyContainer.appendChild(privacyItemDiv);
+            privacyItemDiv.addEventListener('click', () => {
+                const pastUsedMemoryContainer = document.getElementById('used-memory-container');
+                if (pastUsedMemoryContainer) {
+                    pastUsedMemoryContainer.remove();
+                }
+                const usedMemoryContainer = document.createElement('div');
+                usedMemoryContainer.id = 'used-memory-container';
+                const usedMemory = item.used_memory;
+                const usedUserInput = item.used_user_input;
+                usedMemory.forEach(memory => {
+                    const highlightedMemory = highlightText(memory.full, memory.shortened);
+        
+                    const usedMemoryDiv = document.createElement('div');
+                    usedMemoryDiv.innerHTML = `
+                    <div>Used Memory:</div>
+                    <span contenteditable="true">${highlightedMemory}</span>
+                    <svg width="30px" height="30px" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2.125 2.125V10H8.875V2.125H2.125Z" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linejoin="round"/>
 <path d="M4.375 4.375V7.75" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M6.625 4.375V7.75" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M1 2.125H10" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M3.8125 2.125L4.50627 1H6.50767L7.1875 2.125H3.8125Z" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linejoin="round"/>
 </svg>
-                        `;
-                        usedMemoryContainer.appendChild(usedMemoryDiv);
-                        usedMemoryDiv.querySelector('svg').addEventListener('click', () => {
-                            // usedMemory = usedMemory.filter(memoryItem => memoryItem !== memory);
-                            // item.used_memory = usedMemory;
+                    `;
+                    usedMemoryContainer.appendChild(usedMemoryDiv);
+                    usedMemoryDiv.querySelector('svg').addEventListener('click', () => {
+                        // usedMemory = usedMemory.filter(memoryItem => memoryItem !== memory);
+                        // item.used_memory = usedMemory;
 
-                            // usedMemoryDiv.remove();
-                            // const xhr = new XMLHttpRequest();
-                            // xhr.open("POST", "{{ url_for('delete_memory') }}", true);
-                            // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                            // xhr.onreadystatechange = function() {
-                            //     if (xhr.readyState === 4 && xhr.status === 200) {
-                            //         console.log("Received delete memory response.");
-                            //         const response = JSON.parse(xhr.responseText);
-                            //         console.log(response);
-                            //         // 选择最后一个assistant的回复
-                            //         const assistantResponse = document.querySelectorAll('.message.assistant')[document.querySelectorAll('.message.assistant').length - 1];
-                            //         assistantResponse.innerText = response.response;
-                            //         const xhr1 = new XMLHttpRequest();
-                            //         xhr1.open("POST", "{{ url_for('get_privacy') }}", true);
-                            //         xhr1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                            //         xhr1.onreadystatechange = function() {
-                            //             if (xhr1.readyState === 4 && xhr1.status === 200) {
-                            //                 console.log("Received privacy response.");
-                            //                 // 返回的是字符串，需要转换为json对象
-                            //                 const response = JSON.parse(xhr1.responseText);
-                            //                 const pastUsedMemoryContainer = document.getElementById('used-memory-container');
-                            //                 if (pastUsedMemoryContainer) {
-                            //                     pastUsedMemoryContainer.remove();
-                            //                 }
-                            //                 displayPrivacyItems(response.privacy, message)
-                            //             }
-                            //         };
-                            //         xhr1.send(`message=${encodeURIComponent(message)}`)
-                            //     }
-                            // };
-                            // xhr.send(`message=${encodeURIComponent(message)}&memory=${memory}&chat_name={{ selected_chat }}`)
-                        
-                            // });
-                            usedMemory.splice(usedMemory.indexOf(memory), 1);
-                            usedMemoryDiv.remove();
-                            updateMemoryOnServer(message, memory);
-                        });
+                        // usedMemoryDiv.remove();
+                        // const xhr = new XMLHttpRequest();
+                        // xhr.open("POST", "{{ url_for('delete_memory') }}", true);
+                        // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        // xhr.onreadystatechange = function() {
+                        //     if (xhr.readyState === 4 && xhr.status === 200) {
+                        //         console.log("Received delete memory response.");
+                        //         const response = JSON.parse(xhr.responseText);
+                        //         console.log(response);
+                        //         // 选择最后一个assistant的回复
+                        //         const assistantResponse = document.querySelectorAll('.message.assistant')[document.querySelectorAll('.message.assistant').length - 1];
+                        //         assistantResponse.innerText = response.response;
+                        //         const xhr1 = new XMLHttpRequest();
+                        //         xhr1.open("POST", "{{ url_for('get_privacy') }}", true);
+                        //         xhr1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        //         xhr1.onreadystatechange = function() {
+                        //             if (xhr1.readyState === 4 && xhr1.status === 200) {
+                        //                 console.log("Received privacy response.");
+                        //                 // 返回的是字符串，需要转换为json对象
+                        //                 const response = JSON.parse(xhr1.responseText);
+                        //                 const pastUsedMemoryContainer = document.getElementById('used-memory-container');
+                        //                 if (pastUsedMemoryContainer) {
+                        //                     pastUsedMemoryContainer.remove();
+                        //                 }
+                        //                 displayPrivacyItems(response.privacy, message)
+                        //             }
+                        //         };
+                        //         xhr1.send(`message=${encodeURIComponent(message)}`)
+                        //     }
+                        // };
+                        // xhr.send(`message=${encodeURIComponent(message)}&memory=${memory}&chat_name={{ selected_chat }}`)
+                    
+                        // });
+                        usedMemory.splice(usedMemory.indexOf(memory), 1);
+                        usedMemoryDiv.remove();
+                        updateMemoryOnServer(message, memory);
                     });
-
-                    highlightOriginalText(usedUserInput);
-                    usedUserInput.forEach(userInput => {
-                        const highlightedInput = highlightText(userInput.full, userInput.shortened);
-            
-                        const usedUserInputDiv = document.createElement('div');
-                        usedUserInputDiv.innerHTML = `
-                            <div>Used User Input:</div>
-                            <div>${highlightedInput}</div>
-                        `;
-                        usedMemoryContainer.appendChild(usedUserInputDiv);
-                    });
-                    plugin_container.appendChild(usedMemoryContainer);
                 });
+
+                highlightOriginalText(usedUserInput);
+                usedUserInput.forEach(userInput => {
+                    const highlightedInput = highlightText(userInput.full, userInput.shortened);
+        
+                    const usedUserInputDiv = document.createElement('div');
+                    usedUserInputDiv.innerHTML = `
+                        <div>Used User Input:</div>
+                        <div contenteditable="true">${highlightedInput}</div>
+                    `;
+                    usedMemoryContainer.appendChild(usedUserInputDiv);
+                });
+                plugin_container.appendChild(usedMemoryContainer);
+            });
+        });
+
+        const controlButtonsDiv = document.createElement('div');
+        controlButtonsDiv.style.marginTop = '20px';
+        controlButtonsDiv.innerHTML = `
+            <button type="button" id="submit-all-btn">Submit All</button>
+            <button type="button" id="close-btn">Close</button>
+        `;
+        privacyContainer.appendChild(controlButtonsDiv);
+
+        plugin_container.appendChild(privacyContainer);
+        plugin_container.style.display = 'block';
+        let changes = [];  
+        // Event listener for the Submit button
+        document.getElementById('submit-all-btn').addEventListener('click', () => {
+            const updatedInputs = document.querySelectorAll('[contenteditable="true"]');
+            updatedInputs.forEach(input => {
+                const id = input.getAttribute('data-id');
+                const newText = input.innerText;
+                changes.push({ id, newText });
             });
 
-            plugin_container.appendChild(privacyContainer);
+            submitAllChanges(message, changes);  // Send all changes to the server
+            plugin_container.style.display = 'none';  // Simply hide the popup
+        });
+
+        // Event listener for the Close button
+        document.getElementById('close-btn').addEventListener('click', () => {
+            plugin_container.style.display = 'none';  // Simply hide the popup
+        });
             
+    }
+
+    function displayMemoryItems(memorySuggestions, memoryList) {
+        const plugin_container = document.getElementById('plugin-container');
+        // let phraseDiv = document.getElementById('phrase');
+        // let confidenceBar = document.getElementById('confidence');
+        
+
+        
+        for (let i = 0; i < memorySuggestions.length; i++) {
+            const memoryItem = memorySuggestions[i];
+            const memoryItemDiv = document.createElement('div');
+            const type = memoryItem.type
+            const color = colors[Object.keys(memoryList).indexOf(type)]
+            memoryItemDiv.className = 'memory-item';
+            memoryItemDiv.innerHTML = `
+            <div id="memory-stage">
+                可信度：${memoryItem.confidence }%
+                <span class="type" style="background-color: ${color}">${type}</span>
+                <input type="checkbox" />
+                <div class="phrase" contenteditable="true" style="border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${memoryItem.memoryText}</div>
+            </div>
+            `;
+            plugin_container.appendChild(memoryItemDiv);
+        }
+    }
+
+    // 高亮文本
+    function highlightOriginalText(memorySuggestions) {
+        // memorySuggestions是一个数组，元素是字符串，要高亮的文本
+        // 找到最后一个用户输入框
+        let messageInput = document.getElementsByClassName('message user')[document.getElementsByClassName('message user').length - 1];
+        console.log(messageInput);
+        let originalText = messageInput.innerText;
+        memorySuggestions.forEach(item => {
+            originalText = originalText.replace(item, `<mark>${item}</mark>`);
+        });
+        messageInput.innerHTML = originalText;    
+    }
+
+    document.getElementById('send-button').onclick = function(event) {
+        console.log("Send button clicked.");
+        if (document.getElementById('plugin-container').style.display === 'block') {
+            // 删除所有子节点
+            document.getElementById('plugin-container').innerHTML = '';             
+            document.getElementById('plugin-container').style.display = 'none';
         }
 
-        function displayMemoryItems(memorySuggestions, memoryList) {
-            const plugin_container = document.getElementById('plugin-container');
-            // let phraseDiv = document.getElementById('phrase');
-            // let confidenceBar = document.getElementById('confidence');
-            
-    
-            
-            for (let i = 0; i < memorySuggestions.length; i++) {
-                const memoryItem = memorySuggestions[i];
-                const memoryItemDiv = document.createElement('div');
-                const type = memoryItem.type
-                const color = colors[Object.keys(memoryList).indexOf(type)]
-                memoryItemDiv.className = 'memory-item';
-                memoryItemDiv.innerHTML = `
-                <div id="memory-stage">
-                    可信度：${memoryItem.confidence }%
-                    <span class="type" style="background-color: ${color}">${type}</span>
-                    <input type="checkbox" />
-                    <div class="phrase" contenteditable="true" style="border: 1px solid #ccc; padding: 5px; border-radius: 5px;">${memoryItem.memoryText}</div>
-                </div>
-                `;
-                plugin_container.appendChild(memoryItemDiv);
+        event.preventDefault(); // 阻止表单默认提交
+        const messageInput = document.querySelector('input[name="message"]');
+        const message = messageInput.value;
+        // 推入message user
+        const messagesDiv = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message user';
+        messageDiv.innerText = message;
+        messagesDiv.appendChild(messageDiv);
+        
+        const xhr0 = new XMLHttpRequest();
+        xhr0.open("POST", "{{ url_for('get_privacy') }}", true);
+        xhr0.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr0.onreadystatechange = function() {
+            if (xhr0.readyState === 4 && xhr0.status === 200) {
+                console.log("Received privacy response.");
+                // 返回的是字符串，需要转换为json对象
+                const response = JSON.parse(xhr0.responseText);
+                displayPrivacyItems(response.privacy, message)
+                document.getElementById('plugin-container').style.display = 'block';
             }
+        };     
+        xhr0.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}`)
+
+        const xhr = new XMLHttpRequest();
+        event.preventDefault(); 
+        xhr.open("POST", "{{ url_for('chatbot') }}", true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Received chat response.");
+                const response = JSON.parse(xhr.responseText).response;
+
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message assistant';
+                    messageDiv.innerText = response;
+                    messagesDiv.appendChild(messageDiv);
+                
+            }
+        };
+        xhr.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}`)      
+        messageInput.value = '';
+        const xhr1 = new XMLHttpRequest();
+        xhr1.open("POST", "{{ url_for('update_memory') }}", true);
+        xhr1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr1.onreadystatechange = function() {
+            if (xhr1.readyState === 4 && xhr1.status === 200) {
+                console.log("Received memory update response.");
+                const response = JSON.parse(xhr1.responseText);
+                console.log(response);
+            }
+        };
+        xhr1.send(`message=${encodeURIComponent(message)}`)
+
+    }
+    // 双击修改原始文本
+    function modifyOriginalText(index) {
+        const messageInput = document.querySelector('input[name="message"]');
+        const newText = prompt("Modify the text:", messageInput.value);
+
+        if (newText) {
+            // 更新用户输入框中的文本
+            messageInput.value = newText;
+
+            // 更新后台的记忆信息
+            memorySuggestions[index].originalText = newText;
         }
+    }
 
-        // 高亮文本
-        function highlightOriginalText(memorySuggestions) {
-            // memorySuggestions是一个数组，元素是字符串，要高亮的文本
-            // 找到最后一个用户输入框
-            let messageInput = document.getElementsByClassName('message user')[document.getElementsByClassName('message user').length - 1];
-            console.log(messageInput);
-            let originalText = messageInput.innerText;
-            memorySuggestions.forEach(item => {
-                originalText = originalText.replace(item, `<mark>${item}</mark>`);
-            });
-            messageInput.innerHTML = originalText;
-            // memorySuggestions.forEach(item => {
-            //     // let regex = new RegExp(`(${item.originalText})`, 'gi');
-            //     // 高亮匹配的文本
-            //     const type_info = item.type
-            //     let type_index = Object.keys(memoryList).indexOf(type_info)
-            //     console.log("type_index", type_index);
-            //     // 如果不存在，则新建一个颜色
-            //     if (type_index === -1) {
-            //         type_index = Object.keys(memoryList).length
-            //         colors.push(`#${Math.floor(Math.random()*16777215).toString(16)}`)
-            //     }
-            //     const color = colors[type_index]
-            //     originalText = originalText.replace(item.originalText, `<mark style="background-color: ${color};">${item.originalText}</mark>`);
-            // });
+    document.getElementById('close-plugin').onclick = function() {
+        // 隐藏插件并发送最终请求
+        document.getElementById('plugin-container').style.display = 'none';
+        sendFinalChat(document.querySelector('input[name="message"]').value);
+    };
+    
+    function highlightText(fullText, shortenedText) {
+        const regex = new RegExp(`(${shortenedText})`, 'gi');
+        console.log(fullText);
+        return fullText.replace(regex, '<mark>$1</mark>');
+    }
 
-            // const plugin_container = document.getElementById('plugin-container');
-            // const currentPrompt = document.createElement('div');
-            // currentPrompt.innerHTML = originalText
-            // plugin_container.appendChild(currentPrompt);
-            
-        }
-
-
-
-
-        document.getElementById('send-button').onclick = function(event) {
-            console.log("Send button clicked.");
-            if (document.getElementById('plugin-container').style.display === 'block') {
-                // 删除所有子节点
-                document.getElementById('plugin-container').innerHTML = '';             
+    function submitAllChanges(message, changes) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "{{ url_for('submit_changes') }}", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Changes submitted successfully.");
+                // Optionally, close the popup or provide feedback to the user
                 document.getElementById('plugin-container').style.display = 'none';
             }
-
-            event.preventDefault(); // 阻止表单默认提交
-            const messageInput = document.querySelector('input[name="message"]');
-            const message = messageInput.value;
-            // 推入message user
-            const messagesDiv = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message user';
-            messageDiv.innerText = message;
-            messagesDiv.appendChild(messageDiv);
-            // const xhr0 = new XMLHttpRequest();
-            // xhr0.open("GET", "{{ url_for('get_memory') }}", true);
-            // xhr0.onreadystatechange = function() {
-            //     if (xhr0.readyState === 4 && xhr0.status === 200) {
-            //         console.log("Received memory response.");
-            //         const response = JSON.parse(xhr0.responseText);
-            //         // response.memory是字符串，需要转换为对象
-            //         memoryList = JSON.parse(response.memory);
-            //         console.log(memoryList);
-            //         displayPastMemory(memoryList);
-            //         const xhr = new XMLHttpRequest();
-            //         const memory_type = Object.keys(memoryList).join(", ")
-            //         xhr.open("POST", "{{ url_for('memory_evaluation') }}", true);
-            //         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            //         xhr.onreadystatechange = function() {
-            //             if (xhr.readyState === 4 && xhr.status === 200) {
-            //                 console.log("Received memory evaluation response.");
-            //                 const response = JSON.parse(xhr.responseText);
-            //                 console.log(response);
-            //                 const memorySuggestions = response.memory_suggestions;  // 假设这是个数组
-
-            //                 // 显示多个记忆条目
-            //                 displayMemoryItems(memorySuggestions, memoryList);
-            //                 highlightOriginalText(memorySuggestions, memoryList);
-
-            //                 // 显示插件
-            //                 document.getElementById('plugin-container').style.display = 'block';
-            //                 document.getElementById('past-memory-container').style.display = 'block';
-            //                 document.getElementById('finish-button').style.display = 'block';
-                    
-            //             }
-            //         };
-            //         xhr.send(`message=${encodeURIComponent(message)}&memory_type=${memory_type}`)
-            //     }
-            // };
-            // xhr0.send(); 
-            
-            const xhr0 = new XMLHttpRequest();
-            xhr0.open("POST", "{{ url_for('get_privacy') }}", true);
-            xhr0.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr0.onreadystatechange = function() {
-                if (xhr0.readyState === 4 && xhr0.status === 200) {
-                    console.log("Received privacy response.");
-                    // 返回的是字符串，需要转换为json对象
-                    const response = JSON.parse(xhr0.responseText);
-                    displayPrivacyItems(response.privacy, message)
-                    document.getElementById('plugin-container').style.display = 'block';
-                }
-            };     
-            xhr0.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}`)
-
-            const xhr = new XMLHttpRequest();
-            event.preventDefault(); 
-            xhr.open("POST", "{{ url_for('chatbot') }}", true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    console.log("Received chat response.");
-                    const response = JSON.parse(xhr.responseText).response;
-
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'message assistant';
-                        messageDiv.innerText = response;
-                        messagesDiv.appendChild(messageDiv);
-                    
-                }
-            };
-            xhr.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}`)      
-            messageInput.value = '';
-            const xhr1 = new XMLHttpRequest();
-            xhr1.open("POST", "{{ url_for('update_memory') }}", true);
-            xhr1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr1.onreadystatechange = function() {
-                if (xhr1.readyState === 4 && xhr1.status === 200) {
-                    console.log("Received memory update response.");
-                    const response = JSON.parse(xhr1.responseText);
-                    console.log(response);
-                }
-            };
-            xhr1.send(`message=${encodeURIComponent(message)}`)
-
-        }
-        // 双击修改原始文本
-        function modifyOriginalText(index) {
-            const messageInput = document.querySelector('input[name="message"]');
-            const newText = prompt("Modify the text:", messageInput.value);
-
-            if (newText) {
-                // 更新用户输入框中的文本
-                messageInput.value = newText;
-
-                // 更新后台的记忆信息
-                memorySuggestions[index].originalText = newText;
-            }
-        }
-
-        document.getElementById('close-plugin').onclick = function() {
-            // 隐藏插件并发送最终请求
-            document.getElementById('plugin-container').style.display = 'none';
-            sendFinalChat(document.querySelector('input[name="message"]').value);
         };
-        
-        function highlightText(fullText, shortenedText) {
-            const regex = new RegExp(`(${shortenedText})`, 'gi');
-            return fullText.replace(regex, '<mark>$1</mark>');
-        }
-
+        const data = {
+            message: message,
+            changes: changes
+        };
+        xhr.send(JSON.stringify(data));
+    }
     </script>
 </body>
 </html>

@@ -557,3 +557,453 @@ Given the inputs, here is the detailed analysis and output with the inferred per
 }]
 ```
 =======================================
+=======================================
+1724395839.3628685
+```json
+[
+    {
+        "privacy_info": "The user is an undergraduate student in the Computer Science Department at Tsinghua University.",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [
+            {
+                "shortened":"我是清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。, 我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。, 我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。, 我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。, 我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            "我是清华大学2019级计算机系的本科生"
+        ]
+    },
+    {
+        "privacy_info": "The user has a girlfriend who works at Baidu and studies at an unspecified university in Shanghai.",
+        "confidence": "90%",
+        "type": "Personal Basic Information",
+        "used_user_input": [
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。, 我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。, 我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。, 我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。, 我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            "我是清华大学2019级计算机系的本科生"
+        ]
+    }
+]
+```
+=======================================
+=======================================
+1724395929.8730628
+```json
+[{
+    "privacy_info": "The user is an undergraduate student in the Computer Science Department at Tsinghua University.",
+    "confidence": "99%",
+    "type": "Personal Education and Work Information",
+    "used_user_input": [
+        {
+            "shortened":"清华大学计算机系的一个本科生",
+            "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+        }
+    ],
+    "used_memory": [
+        "我是清华大学2019级计算机系的本科生"
+    ]
+},{
+    "privacy_info": "The user has a girlfriend who works at Baidu and studies at a university in Shanghai.",
+    "confidence": "95%",
+    "type": "Contact Information",
+    "used_user_input": [
+        {
+            "shortened":"我有一个女朋友，我的女朋友在百度工作，在上海某大学上学",
+            "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+        }
+    ],
+    "used_memory": []
+}]
+```
+=======================================
+=======================================
+1724396233.342642
+```json
+[
+    {
+        "privacy_info": "The user is an undergraduate student in the Computer Science Department at Tsinghua University.",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [
+            {
+                "shortened": "我是清华大学计算机系的一个本科生",
+                "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            "我是清华大学2019级计算机系的本科生"
+        ]
+    },
+    {
+        "privacy_info": "The user is 180 cm tall.",
+        "confidence": "99%",
+        "type": "Personal Health Status and Physiological Information",
+        "used_user_input": [
+            {
+                "shortened": "我180米高",
+                "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            "我是清华大学2019级计算机系的本科生"
+        ]
+    },
+    {
+        "privacy_info": "The user is in a relationship and has a girlfriend.",
+        "confidence": "90%",
+        "type": "Personal Basic Information",
+        "used_user_input": [
+            {
+                "shortened": "我有一个女朋友",
+                "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            "我是清华大学2019级计算机系的本科生"
+        ]
+    },
+    {
+        "privacy_info": "The user's girlfriend works at Baidu.",
+        "confidence": "85%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [
+            {
+                "shortened": "我的女朋友在百度工作",
+                "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            "我是清华大学2019级计算机系的本科生"
+        ]
+    },
+    {
+        "privacy_info": "The user's girlfriend studies at a university in Shanghai.",
+        "confidence": "80%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [
+            {
+                "shortened": "我的女朋友在上海某大学上学",
+                "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            "我是清华大学2019级计算机系的本科生"
+        ]
+    }
+]
+```
+=======================================
+=======================================
+1724396376.0923553
+```json
+[
+    {
+        "privacy_info": "The user is a male undergraduate student at Tsinghua University's Computer Science department.",
+        "confidence": "95%",
+        "type": "Personal Basic Information",
+        "used_user_input": [
+            { 
+                "shortened":"我是清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            { 
+                "shortened":"我是清华大学2019级计算机系的本科生",
+                "full":"[我是清华大学2019级计算机系的本科生]"
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user's girlfriend works at Baidu and studies at a university in Shanghai.",
+        "confidence": "90%",
+        "type": "Contact Information",
+        "used_user_input": [
+            { 
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": []
+    }
+]
+```
+=======================================
+=======================================
+1724396559.518657
+```json
+[
+    {
+        "privacy_info": "The user is a bachelor student in the Department of Computer Science at Tsinghua University.",
+        "confidence": "100%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [
+            {
+                "shortened":"清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"清华大学计算机系的一个本科生",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            {
+                "shortened": "我是清华大学2019级计算机系的本科生",
+                "full": "我是清华大学2019级计算机系的本科生"
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user has a girlfriend who works at Baidu and attends a certain university in Shanghai.",
+        "confidence": "95%",
+        "type": "Personal Basic Information",
+        "used_user_input": [
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            },
+            {
+                "shortened":"我的女朋友在百度工作，在上海某大学上学",
+                "full":"我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": []
+    }
+]
+```
+=======================================
+=======================================
+1724396649.1137877
+```json
+[{
+    "privacy_info": "User is a 2019 undergraduate student in the Computer Science department at Tsinghua University",
+    "confidence": "99%",
+    "type": "Personal Education and Work Information",
+    "used_user_input": [
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        },
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        },
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        },
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        },
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        },
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        },
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        },
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        },
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        },
+        {
+            "shortened": "我是清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。",
+        }
+    ],
+    "used_memory": [
+        {
+            "shortened": "清华大学2019级计算机系的本科生",
+            "full": "[我是清华大学2019级计算机系的本科生]"
+        }
+    ]
+}]
+```
+=======================================
+=======================================
+1724396741.1417837
+```json
+[
+    {
+        "privacy_info": "The user is an undergraduate student at the Department of Computer Science, Tsinghua University.",
+        "confidence": "100%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [
+            {
+                "shortened": "我是清华大学计算机系的一个本科生",
+                "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": [
+            {
+                "shortened": "我是清华大学2019级计算机系的本科生",
+                "full": "[我是清华大学2019级计算机系的本科生]"
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user is in a relationship.",
+        "confidence": "100%",
+        "type": "Personal Basic Information",
+        "used_user_input": [
+            {
+                "shortened": "我有一个女朋友",
+                "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": []
+    },
+    {
+        "privacy_info": "The user's girlfriend works at Baidu.",
+        "confidence": "100%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [
+            {
+                "shortened": "我的女朋友在百度工作",
+                "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": []
+    },
+    {
+        "privacy_info": "The user's girlfriend studies at a university in Shanghai.",
+        "confidence": "100%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [
+            {
+                "shortened": "我的女朋友在上海某大学上学",
+                "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+            }
+        ],
+        "used_memory": []
+    }
+]
+```
+=======================================
+=======================================
+1724396985.577118
+```json
+[{
+    "privacy_info": "The user is an undergraduate student at Tsinghua University's Computer Science Department, enrolled in the 2019 cohort.",
+    "confidence": "99%",
+    "type": "Personal Education and Work Information",
+    "used_user_input": [
+        {
+            "shortened": "清华大学计算机系的一个本科生",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+        }
+    ],
+    "used_memory": [
+        {
+            "shortened": "清华大学2019级计算机系的本科生",
+            "full": "我是清华大学2019级计算机系的本科生"
+        }
+    ]
+},{
+    "privacy_info": "The user's girlfriend works at Baidu.",
+    "confidence": "95%",
+    "type": "Personal Education and Work Information",
+    "used_user_input": [
+        {
+            "shortened": "女朋友在百度工作",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+        }
+    ],
+    "used_memory": [
+        {
+            "shortened": "N/A",
+            "full": "N/A"
+        }
+    ]
+},{
+    "privacy_info": "The user's girlfriend studies at a university in Shanghai.",
+    "confidence": "95%",
+    "type": "Personal Education and Work Information",
+    "used_user_input": [
+        {
+            "shortened": "在上海某大学上学",
+            "full": "我是清华大学计算机系的一个本科生，我180米高，200吨重，每天能吃1000碗米饭，都吃不饱。我有一个女朋友，我的女朋友在百度工作，在上海某大学上学。"
+        }
+    ],
+    "used_memory": [
+        {
+            "shortened": "N/A",
+            "full": "N/A"
+        }
+    ]
+}]
+```
+=======================================

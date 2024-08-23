@@ -9,6 +9,7 @@ import time
 import ipdb
 import re
 import json
+import traceback
 
 from openai import AzureOpenAI
 
@@ -482,7 +483,10 @@ Example:
                 }
             ],
             "used_memory": [
-                "User watches Bollywood movies all the time."
+                {
+                    "shortened": "watches Bollywood movies",
+                    "full": "User watches Bollywood movies all the time.",
+                }
             ]
         }]
 
@@ -517,7 +521,11 @@ The following is the input: '''
     print("============== privacy ==============\n")
     print(privacy)
     print("=====================================\n")
-    privacy = json.loads(privacy)
+    try:
+        privacy = json.loads(privacy)
+    except:
+        traceback.print_exc()
+        ipdb.set_trace()
 
     return jsonify({'privacy': privacy})
 
@@ -655,6 +663,31 @@ def log_query(history, response):
             f.write(str(hh) + "\n")
         f.write(response + "\n")
         f.write("======================================== query \n")
+
+@app.route('/submit_changes', methods=['POST'])
+@login_required
+def submit_changes():
+    data = request.json
+    message = data.get('message')
+    changes = data.get('changes')
+    ipdb.set_trace()
+    
+    # Example processing logic
+    for change in changes:
+        id = change.get('id')
+        new_text = change.get('newText')
+        
+        # You should have a mapping to determine whether the ID is for memory or input
+        if id.startswith('input-'):
+            # Update the corresponding user input
+            # Example: update_user_input(id, new_text)
+            pass
+        elif id.startswith('memory-'):
+            # Update the corresponding memory
+            # Example: update_memory(id, new_text)
+            pass
+    
+    return jsonify({'status': 'success'})
 
 if __name__ == '__main__':
     if not os.path.exists(USER_DATA_FILE):
