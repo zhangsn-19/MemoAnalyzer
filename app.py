@@ -326,17 +326,23 @@ def chatbot():
     
     memory = "\n".join(memory)
     print(memory)
+    print("================== MEMORY MESSAGE ==================== \n")
+    print(chat_name, message)
+    print("===================================================== \n")
     if chat_name and message:
         chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
         log_message("user", message)
-        save_message_to_file(chat_file, current_user.username, message)
-
+        save_message_to_file(chat_file, "user", message)
+        current_chat_history = get_current_chat_history(chat_name)
         # 生成响应
-        bot_response = generate_response([
-            {"role": "system", "content": "Answer user's question with the following memories."},
+        past_messages = [
+            {"role": "system", "content": "Answer user's question with the following memories. You can use these memories to answer user's question: "+ memory}]+current_chat_history+[
             {"role": "user", "content": message},
-            {"role": "assistant", "content": "You can use these memories to answer user's question: "+memory}
-        ])
+        ]
+        print("============== FOR DEBUG ============= \n")
+        print(past_messages)
+        print("====================================== \n")
+        bot_response = generate_response(past_messages)
         print(f"Bot response: {bot_response}")
         log_message("assistant", bot_response)
         save_message_to_file(chat_file, "assistant", bot_response)
@@ -353,35 +359,29 @@ def chat():
         new_chat_name = request.form.get('new_chat_name')
         if new_chat_name:
             # 创建新对话
-            print(f"Creating new chat: {new_chat_name}")
             selected_chat = new_chat_name
             chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{selected_chat}.txt')
-            # 确保文件存在
             if not os.path.exists(chat_file):
                 open(chat_file, 'w').close()
-            # 更新 chat_list 确保新对话立即显示
             chat_list = [f.split('__')[1] for f in os.listdir(CHAT_DATA_DIR) if f.startswith(f"{current_user.username}__")]
         else:
-            print("Processing chat message")
             chat_name = request.form.get('chat_name', '')
             message = request.form.get('message', '')
             with open(f"{current_user.username}_memory.json", "r") as f:
                 memory = json.loads(f.read())
-            
+
             memory = "\n".join(memory)
-            print(memory)
             if chat_name and message:
                 chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
                 log_message("user", message)
-                save_message_to_file(chat_file, current_user.username, message)
+                save_message_to_file(chat_file, "user", message)
+                current_chat_history = get_current_chat_history(chat_name)
 
-                # 生成响应
                 bot_response = generate_response([
-                    {"role": "system", "content": "Answer user's question with the following memories."},
+                    {"role": "system", "content": "Answer user's question with the following memories. You can use these memories to answer user's question: " + memory}
+                ] + current_chat_history + [
                     {"role": "user", "content": message},
-                    {"role": "assistant", "content": "You can use these memories to answer user's question: "+memory}
                 ])
-                print(f"Bot response: {bot_response}")
                 log_message("assistant", bot_response)
                 save_message_to_file(chat_file, "assistant", bot_response)
 
@@ -390,79 +390,104 @@ def chat():
     chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{selected_chat}.txt')
     if os.path.exists(chat_file):
         with open(chat_file, 'r') as f:
-            conversations = f.readlines()
+            conversations = [json.loads(line.strip()) for line in f.readlines()]
+            formatted_conversations = [{'message': conv['message']} for conv in conversations]
     else:
-        conversations = []
-    print("========= chat list ========")
-    print(chat_list)
-    print("========= selected chat ========")
-    print(selected_chat)
-    print("========= ========== ========")
-    # return jsonify({'chat_list': chat_list, 'conversations': conversations, 'selected_chat': selected_chat})
+        formatted_conversations = []
     return render_template('chat.html', chat_list=chat_list, conversations=conversations, selected_chat=selected_chat)
+
 
 @app.route('/get_privacy', methods=['POST'])
 @login_required
 def get_privacy():
+    chat_name = request.form.get('chat_name', '')
     # memory 是个数组, 元素是字符串
     with open(f'{current_user.username}_memory.json', 'r') as f:
         memory = json.loads(f.read())
-    memory = "\n".join(memory)
+    memory = "[" + ",".join(memory), "]"
     message = request.form.get('message')
+    user_chat_history = get_user_only_chat_history_as_string(chat_name)
     prompt = '''
-        Please review the following text and decide if it can infer to any personal or sensitive information.
-        The text consists of the user's prompt and the system's memory. 
-        Note that the information stored in the system's memory should not be classified as personal or sensitive. 
-        Only information that can be inferred from the user's input and the system's memory should be considered. 
-        If any personal or sensitive information is inferred, please identify the information, indicate the exact phrases or words from the user's input (limitted to 7 words) and the orginal entire sentences from the memory used for the inference, and provide an associated confidence level.
-        
-        Input Format:
-        - User's prompt: ...
-        - Memory: ...
+1. Please review the following text and decide if it can infer to any personal or sensitive information.
+The text consists of the past inputs and the memory. 
+Note that the information stored in the memory should not be classified as personal or sensitive. 
+Only information that can be inferred from the past inputs and the memory should be considered. 
+2. If any personal or sensitive information is inferred, please identify the information, indicate the exact phrases or words from the past input and the orginal entire sentences from the memory used for the inference.
+3. indicate both extracted words and the original entire sentence. 
+4. Additionally, provide your associated confidence level of making this inference: how sure are you in inferring? 
+5. Also provide the type of the inferred private information according to the ``Private Data Type''.
 
-        Output Format:
-        [{
-            "privacy_info": ...,
-            "confidence": ...,
-            "used_user_input": [
-                "...", "...", ...
-            ],
-            "used_memory": [
-                "...", "...", ...
-            ]
-        },{
-            "privacy_info": ...,
-            "confidence": ...,
-            "used_user_input": [
-                "...", "...", ...
-            ],
-            "used_memory": [
-                "...", "...", ...
-            ]
-        }]
+Private Data Type:
+Personal basic information: consists of name, date of birth, age, gender, ethnicity, nationality, place of origin, marital status, family relationships, address, phone number, email address, hobbies and interests
+Personal identity Information: consists of identity card, passport, driver's license, work ID
+Online Identity Identifier Information: consists of user account, user ID, instant messaging account, social media account, nickname, IP address
+Personal Health Status and Physiological Information: consists of weight, height, blood type, medical conditions, prescription, medical test reports, physical examination reports, medical history
+Personal Education and Work Information: consists of education level, degree, education history, transcript, occupation, job title, employer, work location, work experience, salary, resume.
+Personal Financial Information: consists of bank card number, payment account, account balance, transaction orders, transaction account, payment records, income status, property information, savings information, vehicle information, tax amount, virtual assets
+Personal Borrowing Information: consists of loan information, repayment information, debt information, credit record, credit report
+Identity Authentication Information: account login password, bank card password, payment password, account query password, transaction password, bank card security code, USB key, dynamic password, SMS verification code, personal digital certificate, random token
+Personal Communication Information: communication records, text messages, emails, instant messaging
+Contact Information: address book, friends list, group list, email address list, family relationships, work relationships, social relationships
+Personal Internet Records: web browsing history, software usage records, cookies, published social media information, search history, download history
+Personal Location Information: area code, city code, latitude and longitude, accomodation information, community code
+Personal Movement Information: step count, step frequency, exercise duration, exercise distance, exercise type, heart rate during exerciese
+Other Personal Information: sexual orientation.
+
+Rules:
+- Always follow ``Private Data Type''.
+- Never output unuseful other text of other form.       
+
+Input Format:
+    - Past Inputs: ...
+    - Memory: ...
+
+Output Format:
+    [{
+        "privacy_info": ...,
+        "confidence": ...,
+        "type": ...,
+        "used_user_input": [
+            "...", "...", ...
+        ],
+        "used_memory": [
+            "...", "...", ...
+        ]
+    },{
+        "privacy_info": ...,
+        "confidence": ...,
+        "type": ...,
+        "used_user_input": [
+            "...", "...", ...
+        ],
+        "used_memory": [
+            "...", "...", ...
+        ]
+    }]
 
 
-        For example:
-        Input:
-        - User's prompt: Please plan me a two day and one night trip to Pune by car.
-        - Memory: User watches Bollywood movies all the time.
+Example:
+    Input:
+        - Past Inputs: ["Please plan me a two day and one night trip to Pune by car"]
+        - Memory: ["User watches Bollywood movies all the time"]
 
-        Output:
+    Output:
         [{
             "privacy_info": "The user is Indian.",
             "confidence": "95%",
+            "type": "Personal Basic Information",
             "used_user_input": [
-                "trip to Pune."
+                {
+                    "shortened":"trip to Pune",
+                    "full":"Please plan me a two day and one night trip to Pune by car",
+                }
             ],
             "used_memory": [
                 "User watches Bollywood movies all the time."
             ]
         }]
 
-        The following is the input:
-
-    '''
-    prompt += f"- User's prompt: {message}\n"
+The following is the input: '''
+    prompt += f"- Past Input: {user_chat_history}\n"
     prompt += f"- Memory: {memory}\n"
     prompt += "please output the privacy_info, confidence, used_user_input, and used_memory."
     print("================================ \n")
@@ -477,9 +502,7 @@ def get_privacy():
     )
     # 解析成json
     privacy = response.choices[0].message.content
-    print("============== privacy ==============\n")
-    print(privacy)
-    print("=====================================\n")
+    
     with open(f"{current_user.username}_privacy.json", "a") as f:
         f.write("=======================================\n")
         f.write(str(time.time()) + "\n")
@@ -491,6 +514,9 @@ def get_privacy():
     privacy = privacy[first_bracket:last_bracket+1]
     # print(privacy)
     # text to json
+    print("============== privacy ==============\n")
+    print(privacy)
+    print("=====================================\n")
     privacy = json.loads(privacy)
 
     return jsonify({'privacy': privacy})
@@ -513,7 +539,7 @@ def delete_memory():
     print(memory_item)
     chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
     log_message("user", message)
-    save_message_to_file(chat_file, current_user.username, message)
+    save_message_to_file(chat_file, "user", message)
 
     # 生成响应
     bot_response = generate_response([
@@ -552,16 +578,51 @@ def generate_response(history):
     
     return response.choices[0].message.content.strip()
 
+def get_user_only_chat_history_as_string(chat_name):
+    chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
+    user_only_history = []
+
+    if os.path.exists(chat_file):
+        with open(chat_file, 'r') as f:
+            chat_history = f.readlines()
+            for line in chat_history:
+                chat_entry = json.loads(line.strip())
+                if chat_entry['role'] == 'user':
+                    user_only_history.append(chat_entry['message'])
+
+    # 将用户输入列表转换为用逗号分隔的字符串，并加上方括号
+    user_only_history_str = f"[{', '.join(user_only_history)}]"
+
+    return user_only_history_str
+
 def save_message_to_file(chat_file, role, message):
     with open(chat_file, 'a') as f:
-        f.write(f"{role}: {message}\n")
+        message_entry = {'role': role, 'message': message}
+        f.write(json.dumps(message_entry) + '\n')
+
+def get_current_chat_history(chat_name):
+    chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
+    chat_history = []
+    if os.path.exists(chat_file):
+        with open(chat_file, 'r') as f:
+            for line in f:
+                chat_history.append(json.loads(line.strip()))
+    # rename 'message' field in chat history to 'content' field
+    new_chat_history = []
+    for chat in chat_history:
+        new_chat_history.append({
+            'role': chat['role'],
+            'content': chat['message'],
+        })
+    return new_chat_history
 
 def read_chat_history(user_id):
     chat_history = []
-    chat_files = [f for f in os.listdir(CHAT_DATA_DIR) if f.startswith(f"{user_id}_")]
+    chat_files = [f for f in os.listdir(CHAT_DATA_DIR) if f.startswith(f"{user_id}__")]
     for chat_file in chat_files:
         with open(os.path.join(CHAT_DATA_DIR, chat_file), 'r') as f:
-            chat_history.extend(f.readlines())
+            for line in f:
+                chat_history.append(json.loads(line.strip()))
     return chat_history
 
 def log_message(role, message):

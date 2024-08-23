@@ -103,7 +103,7 @@
         /* 浮动框样式 */
         #plugin-container {
             display: none;
-            position: absolute;
+            position: fixed;
             top: 10px;
             right: 10px;
             width: 300px;
@@ -150,7 +150,7 @@
     </div>
     <div id="past-memory-container" style="display:none;height: 700px;overflow-y:auto; position:fixed; top:50px; left:50px; width:300px; padding:20px; background:white; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-radius:5px;">使用过往记忆
     </div>
-    <button type="button" id="finish-button" style="display:none; position:fixed; bottom:50px; right:50px;z-index: 999;">Finish</button>"
+    <button type="button" id="finish-button" style="display:none; position:fixed; bottom:50px; right:50px;z-index: 999;">Finish</button>
     
     <div id="chat-container">
         <div id="chat-list">
@@ -170,19 +170,15 @@
             <h4>{{ selected_chat }}</h4>
             <div id="messages">
                 {% for conversation in conversations %}
-                <!-- 
-                    只遍历assistant的回复，跳过user的输入
-                -->
-                {% if conversation.startswith('assistant') %}
-                <div class="message assistant">
-                    {{ conversation.split(': ', 1)[1] | safe }}
-                </div>
-                
-                {% else %}
-                <div class="message user">
-                    {{ conversation.split(': ', 1)[1] | safe }}
-                </div>
-                {% endif %}
+                    {% if conversation.role == "assistant" %}
+                        <div class="message assistant">
+                            {{ conversation.message | safe }}
+                        </div>
+                    {% elif conversation.role == "user" %}
+                        <div class="message user">
+                            {{ conversation.message | safe }}
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
             <form id="message-form">
@@ -302,17 +298,79 @@
     }
         function displayPrivacyItems(privacy, message) {
             console.log(privacy);
+            const data = {
+    "Personal Basic Information": 4.240,
+    "Personal Identity Information": 5.790,
+    "Online Identity Identifier Information": 5.878,
+    "Personal Health Status and Physiological Information": 4.768,
+    "Personal Exercise Information": 3.327,
+    "Personal Education and Work Information": 5.069,
+    "Personal Property Information": 5.619,
+    "Identity Verification Information": 5.966,
+    "Personal Communication Information": 5.188,
+    "Contacts Information": 5.110,
+    "Personal Internet Browsing History": 5.122,
+    "Personal Location Information": 4.398,
+    "Other Personal Information": 3.946
+};
+
+// // Function to map a value from 1-7 to a color from red (255, 0, 0) to black (0, 0, 0)
+// function getColorForValue(value) {
+//     // Normalize the value to a range of 0-1
+//     const normalizedValue = (value - 3.5) / (6.5 - 3.5);
+//     const red = Math.floor(255 * (1 - normalizedValue));
+//     const green = 0;
+//     const blue = 0;
+
+//     return `rgb(${red}, ${green}, ${blue})`;
+// }
+
             const plugin_container = document.getElementById('plugin-container');
             // 如果存在privacy-container，则删除
             const pastPrivacyContainer = document.getElementById('privacy-container');
             if (pastPrivacyContainer) {
                 pastPrivacyContainer.remove();
             }
+            function getGradientColor(alpha, opacity) {
+                // 确保alpha在0到1之间
+                alpha = Math.max(0, Math.min(1, alpha));
+
+                // 纯蓝色：rgb(0, 0, 255)
+                // 纯红色：rgb(255, 0, 0)
+
+                // 计算红色分量
+                const red = Math.round(255 * alpha);
+                // 蓝色分量随alpha变化而变化
+                const blue = Math.round(255 * (1 - alpha));
+
+                // 返回CSS格式的颜色字符串
+                return `rgb(${red}, 0, ${blue}, ${opacity})`;
+            }
             const privacyContainer = document.createElement('div');
             privacyContainer.id = 'privacy-container';
             privacy.forEach(item => {
+                let meanValue = 0;
+                if (data.hasOwnProperty(item.type)) {
+                    meanValue = data[item.type];
+                }
+
+                let confidenceString = item.confidence || "100%"; // 如果没有置信度，默认是100%
+                let confidence = parseFloat(confidenceString.replace('%', '')) || 100; // 转换为数字，去掉百分号，如果转换失败则为100
+                const opacity = (confidence - 60) / 40; // 根据置信度设置透明度
+                // const colorIntensity = Math.floor(255 * (1 - opacity)); // 根据置信度设置颜色强度
+                
+                const normalizedValue = (meanValue - 3.5) / (6.5 - 3.5);
+                const backgroundColor = getGradientColor(normalizedValue, opacity)
+
                 const privacyItemDiv = document.createElement('div');
                 privacyItemDiv.className = 'privacy-item';
+                privacyItemDiv.style.backgroundColor = backgroundColor; // 设置背景颜色
+                // privacyItemDiv.style.color = color;
+                privacyItemDiv.style.opacity = opacity; // 设置透明度
+                privacyItemDiv.style.border = `1px solid rgba(255, 255, 153, ${opacity})`; // 设置边框颜色和透明度
+                privacyItemDiv.style.padding = "10px"; // 增加一些填充来让边框更明显
+                privacyItemDiv.style.borderRadius = "5px"; // 圆角边框
+                console.log(backgroundColor, opacity);
                 privacyItemDiv.innerHTML = `
                 <div>Confidence: ${item.confidence}</div>
                 <div>${item.privacy_info}</div>
@@ -325,13 +383,15 @@
                     }
                     const usedMemoryContainer = document.createElement('div');
                     usedMemoryContainer.id = 'used-memory-container';
-                    usedMemory = item.used_memory
-                    usedUserInput = item.used_user_input
+                    const usedMemory = item.used_memory;
+                    const usedUserInput = item.used_user_input;
                     usedMemory.forEach(memory => {
+                        const highlightedMemory = highlightText(memory.full, memory.shortened);
+            
                         const usedMemoryDiv = document.createElement('div');
                         usedMemoryDiv.innerHTML = `
                         <div>Used Memory:</div>
-                        <span>${memory}</span>
+                        <span>${highlightedMemory}</span>
                         <svg width="30px" height="30px" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2.125 2.125V10H8.875V2.125H2.125Z" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linejoin="round"/>
 <path d="M4.375 4.375V7.75" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -339,55 +399,59 @@
 <path d="M1 2.125H10" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M3.8125 2.125L4.50627 1H6.50767L7.1875 2.125H3.8125Z" stroke="#9C9C9C" stroke-opacity="0.5" stroke-linejoin="round"/>
 </svg>
-
-
                         `;
                         usedMemoryContainer.appendChild(usedMemoryDiv);
                         usedMemoryDiv.querySelector('svg').addEventListener('click', () => {
-                            usedMemory = usedMemory.filter(memoryItem => memoryItem !== memory);
-                            item.used_memory = usedMemory;
+                            // usedMemory = usedMemory.filter(memoryItem => memoryItem !== memory);
+                            // item.used_memory = usedMemory;
 
-                            usedMemoryDiv.remove();
-                            const xhr = new XMLHttpRequest();
-                            xhr.open("POST", "{{ url_for('delete_memory') }}", true);
-                            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                            xhr.onreadystatechange = function() {
-                                if (xhr.readyState === 4 && xhr.status === 200) {
-                                    console.log("Received delete memory response.");
-                                    const response = JSON.parse(xhr.responseText);
-                                    console.log(response);
-                                    // 选择最后一个assistant的回复
-                                    const assistantResponse = document.querySelectorAll('.message.assistant')[document.querySelectorAll('.message.assistant').length - 1];
-                                    assistantResponse.innerText = response.response;
-                                    const xhr1 = new XMLHttpRequest();
-                                    xhr1.open("POST", "{{ url_for('get_privacy') }}", true);
-                                    xhr1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                                    xhr1.onreadystatechange = function() {
-                                        if (xhr1.readyState === 4 && xhr1.status === 200) {
-                                            console.log("Received privacy response.");
-                                            // 返回的是字符串，需要转换为json对象
-                                            const response = JSON.parse(xhr1.responseText);
-                                            const pastUsedMemoryContainer = document.getElementById('used-memory-container');
-                                            if (pastUsedMemoryContainer) {
-                                                pastUsedMemoryContainer.remove();
-                                            }
-                                            displayPrivacyItems(response.privacy, message)
-                                        }
-                                    };
-                                    xhr1.send(`message=${encodeURIComponent(message)}`)
-                                }
-                            };
-                            xhr.send(`message=${encodeURIComponent(message)}&memory=${memory}&chat_name={{ selected_chat }}`)
-                    });
-                    });
-
-                    highlightOriginalText(usedUserInput)
-                    usedUserInput.forEach(userInput => {
+                            // usedMemoryDiv.remove();
+                            // const xhr = new XMLHttpRequest();
+                            // xhr.open("POST", "{{ url_for('delete_memory') }}", true);
+                            // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                            // xhr.onreadystatechange = function() {
+                            //     if (xhr.readyState === 4 && xhr.status === 200) {
+                            //         console.log("Received delete memory response.");
+                            //         const response = JSON.parse(xhr.responseText);
+                            //         console.log(response);
+                            //         // 选择最后一个assistant的回复
+                            //         const assistantResponse = document.querySelectorAll('.message.assistant')[document.querySelectorAll('.message.assistant').length - 1];
+                            //         assistantResponse.innerText = response.response;
+                            //         const xhr1 = new XMLHttpRequest();
+                            //         xhr1.open("POST", "{{ url_for('get_privacy') }}", true);
+                            //         xhr1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                            //         xhr1.onreadystatechange = function() {
+                            //             if (xhr1.readyState === 4 && xhr1.status === 200) {
+                            //                 console.log("Received privacy response.");
+                            //                 // 返回的是字符串，需要转换为json对象
+                            //                 const response = JSON.parse(xhr1.responseText);
+                            //                 const pastUsedMemoryContainer = document.getElementById('used-memory-container');
+                            //                 if (pastUsedMemoryContainer) {
+                            //                     pastUsedMemoryContainer.remove();
+                            //                 }
+                            //                 displayPrivacyItems(response.privacy, message)
+                            //             }
+                            //         };
+                            //         xhr1.send(`message=${encodeURIComponent(message)}`)
+                            //     }
+                            // };
+                            // xhr.send(`message=${encodeURIComponent(message)}&memory=${memory}&chat_name={{ selected_chat }}`)
                         
+                            // });
+                            usedMemory.splice(usedMemory.indexOf(memory), 1);
+                            usedMemoryDiv.remove();
+                            updateMemoryOnServer(message, memory);
+                        });
+                    });
+
+                    highlightOriginalText(usedUserInput);
+                    usedUserInput.forEach(userInput => {
+                        const highlightedInput = highlightText(userInput.full, userInput.shortened);
+            
                         const usedUserInputDiv = document.createElement('div');
                         usedUserInputDiv.innerHTML = `
-                        <div>Used User Input:</div>
-                        <div>${userInput}</div>
+                            <div>Used User Input:</div>
+                            <div>${highlightedInput}</div>
                         `;
                         usedMemoryContainer.appendChild(usedUserInputDiv);
                     });
@@ -526,7 +590,7 @@
                     document.getElementById('plugin-container').style.display = 'block';
                 }
             };     
-            xhr0.send(`message=${encodeURIComponent(message)}`)
+            xhr0.send(`message=${encodeURIComponent(message)}&chat_name={{ selected_chat }}`)
 
             const xhr = new XMLHttpRequest();
             event.preventDefault(); 
@@ -578,6 +642,11 @@
             document.getElementById('plugin-container').style.display = 'none';
             sendFinalChat(document.querySelector('input[name="message"]').value);
         };
+        
+        function highlightText(fullText, shortenedText) {
+            const regex = new RegExp(`(${shortenedText})`, 'gi');
+            return fullText.replace(regex, '<mark>$1</mark>');
+        }
 
     </script>
 </body>
