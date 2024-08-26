@@ -10,6 +10,10 @@ import ipdb
 import re
 import json
 import traceback
+import uuid 
+
+def generate_unique_id():
+    return str(uuid.uuid4())
 
 from openai import AzureOpenAI
 
@@ -289,20 +293,34 @@ def update_memory():
     if memory == "[]":
         return jsonify({'memory': []})
     import ast
-    memory = ast.literal_eval(memory)
+    try:
+        memory = ast.literal_eval(memory)
+    except Exception as e:
+        print(f"Error in parsing memory: {e}")
+        memory = []
+
     previous_memory = []
+    memory_list = []
+    for mem in memory:
+        memory_list.append({
+            "id": generate_unique_id(),
+            "memoryText": mem,
+        })
     with open(f"{current_user.username}_memory.json", "r") as f:
         previous_memory = json.loads(f.read())
-    print(previous_memory)
-    # 数组合并
-    memory = list(set(memory + previous_memory))
-    print(memory)
-    with open(f"{current_user.username}_memory.json", "w", encoding='utf-8') as f:
-        f.write(json.dumps(memory, ensure_ascii=False, indent=4))
-    return jsonify({'memory': memory})
-
-
     
+    # 数组合并
+    merged_memory = previous_memory + memory_list
+    print("======================================== \n")
+    print(merged_memory)
+    print("======================================== \n")
+    # 没有动态merge了
+
+    with open(f"{current_user.username}_memory.json", "w", encoding='utf-8') as f:
+        f.write(json.dumps(merged_memory, ensure_ascii=False, indent=4))
+
+    save_state_with_timestamp("updatememory")  # Save the state before processing
+    return jsonify({'memory': merged_memory})
 
 if not os.path.exists(MEMORY_DIR):
     os.makedirs(MEMORY_DIR)
@@ -319,17 +337,26 @@ def save_memory(user_id, phrase, action):
 @app.route('/chatbot', methods=['POST'])
 @login_required
 def chatbot():
-    print("Processing chat message")
     chat_name = request.form.get('chat_name', '')
     message = request.form.get('message', '')
+    new_chat_name = None
+
+    # 如果 chat_name 为空，自动生成新的对话名称
+    if not chat_name:
+        new_chat_name = message[:10]  # 自动生成新的对话名称，截取前10个字符
+        chat_name = new_chat_name
+        chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
+
+        # 如果文件不存在，说明这是一个新的对话，需要创建文件
+        if not os.path.exists(chat_file):
+            open(chat_file, 'w').close()
+
     with open(f"{current_user.username}_memory.json", "r") as f:
         memory = json.loads(f.read())
     
-    memory = "\n".join(memory)
-    print(memory)
-    print("================== MEMORY MESSAGE ==================== \n")
-    print(chat_name, message)
-    print("===================================================== \n")
+    memory_texts = [mem["memoryText"] for mem in memory]
+    memory = "\n".join(memory_texts)
+
     if chat_name and message:
         chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
         log_message("user", message)
@@ -348,7 +375,9 @@ def chatbot():
         log_message("assistant", bot_response)
         save_message_to_file(chat_file, "assistant", bot_response)
 
-    return jsonify({'response': bot_response})
+    save_state_with_timestamp("chatbot")  # Save the state before processing
+
+    return jsonify({'response': bot_response, 'chat_name': chat_name})
 
 @app.route('/chat', methods=['GET', 'POST'])
 @login_required
@@ -368,8 +397,15 @@ def chat():
         else:
             chat_name = request.form.get('chat_name', '')
             message = request.form.get('message', '')
-            with open(f"{current_user.username}_memory.json", "r") as f:
-                memory = json.loads(f.read())
+            # with open(f"{current_user.username}_memory.json", "r") as f:
+            #     memory = json.loads(f.read())
+            try:
+                with open(f"{current_user.username}_memory.json", 'r') as f:
+                    memory = json.loads(f.read().strip())
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
+                memory = {}  # 或者其他默认行为
+
 
             memory = "\n".join(memory)
             if chat_name and message:
@@ -389,6 +425,7 @@ def chat():
                 selected_chat = chat_name
 
     chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{selected_chat}.txt')
+    conversations = []
     if os.path.exists(chat_file):
         with open(chat_file, 'r') as f:
             conversations = [json.loads(line.strip()) for line in f.readlines()]
@@ -402,21 +439,53 @@ def chat():
 @login_required
 def get_privacy():
     chat_name = request.form.get('chat_name', '')
-    # memory 是个数组, 元素是字符串
-    with open(f'{current_user.username}_memory.json', 'r') as f:
-        memory = json.loads(f.read())
-    memory = "[" + ",".join(memory), "]"
+    
+    # Load memory from JSON file
+    # with open(f'{current_user.username}_memory.json', 'r') as f:
+    #     memory = json.loads(f.read())
+    try:
+        with open(f"{current_user.username}_memory.json", 'r') as f:
+            memory = json.loads(f.read().strip())
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+        memory = {}  # 或者其他默认行为
+
+    
+    # Ensure that the memory is in the correct format
+    memory_list = []
+    for mem in memory:
+        if isinstance(mem, dict):
+            memory_list.append({
+                "id": mem.get("id"),
+                "message": mem.get("memoryText")
+            })
+        else:
+            # If mem is not a dict, assume it's a raw memory text and generate an ID
+            memory_list.append({
+                "id": generate_unique_id(),  # Ensure you have a function to generate unique IDs
+                "message": mem
+            })
+    
+    # Convert memory list to a string in JSON format for the prompt
+    memory_str = json.dumps(memory_list)
+    
     message = request.form.get('message')
-    user_chat_history = get_user_only_chat_history_as_string(chat_name)
+    user_chat_history = get_user_only_chat_history(chat_name)
+    print(" ========== FOR PRIVACY PROBING ============ \n")
+    print(user_chat_history)
+    print(memory_str)
+    print(" ========== FOR PRIVACY PROBING ============ \n")
+
     prompt = '''
-1. Please review the following text and decide if it can infer to any personal or sensitive information.
+1. Please review the following text and decide if it can infer any personal sensitive information.
 The text consists of the past inputs and the memory. 
-Note that the information stored in the memory should not be classified as personal or sensitive. 
-Only information that can be inferred from the past inputs and the memory should be considered. 
+The information stored in the memory should not be classified as personal or sensitive. 
+Only consider information that inferred from the past inputs and the memory. 
 2. If any personal or sensitive information is inferred, please identify the information, indicate the exact phrases or words from the past input and the orginal entire sentences from the memory used for the inference.
 3. indicate both extracted words and the original entire sentence. 
 4. Additionally, provide your associated confidence level of making this inference: how sure are you in inferring? 
 5. Also provide the type of the inferred private information according to the ``Private Data Type''.
+6. Copy the id of the input corresponidngto the text to the id in the output.
 
 Private Data Type:
 Personal basic information: consists of name, date of birth, age, gender, ethnicity, nationality, place of origin, marital status, family relationships, address, phone number, email address, hobbies and interests
@@ -435,8 +504,10 @@ Personal Movement Information: step count, step frequency, exercise duration, ex
 Other Personal Information: sexual orientation.
 
 Rules:
-- Always follow ``Private Data Type''.
-- Never output unuseful other text of other form.       
+- MUST follow ``Private Data Type''.
+- NEVER output unuseful other text of other form.
+- MUST use the id in the input to fill the output.     
+- NEVER output repetitive or same privacy info.
 
 Input Format:
     - Past Inputs: ...
@@ -468,8 +539,8 @@ Output Format:
 
 Example:
     Input:
-        - Past Inputs: ["Please plan me a two day and one night trip to Pune by car"]
-        - Memory: ["User watches Bollywood movies all the time"]
+        - Past Inputs: [{"id":"5d2bf23c-9ea7-4917-804e-dcd106d365b1","message":"Please plan me a two day and one night trip to Pune by car"}]
+        - Memory: [{"id":"b13d67ec-20e8-49f8-aaf5-1a67cbfa7c26","message":"User watches Bollywood movies all the time"}]
 
     Output:
         [{
@@ -478,12 +549,14 @@ Example:
             "type": "Personal Basic Information",
             "used_user_input": [
                 {
+                    "id":"5d2bf23c-9ea7-4917-804e-dcd106d365b1",
                     "shortened":"trip to Pune",
                     "full":"Please plan me a two day and one night trip to Pune by car",
                 }
             ],
             "used_memory": [
                 {
+                    "id":"b13d67ec-20e8-49f8-aaf5-1a67cbfa7c26",
                     "shortened": "watches Bollywood movies",
                     "full": "User watches Bollywood movies all the time.",
                 }
@@ -493,7 +566,7 @@ Example:
 The following is the input: '''
     prompt += f"- Past Input: {user_chat_history}\n"
     prompt += f"- Memory: {memory}\n"
-    prompt += "please output the privacy_info, confidence, used_user_input, and used_memory."
+    prompt += "Please output the privacy_info, confidence, used_user_input, and used_memory."
     print("================================ \n")
     print(prompt)
     print("================================ \n")
@@ -512,21 +585,23 @@ The following is the input: '''
         f.write(str(time.time()) + "\n")
         f.write(str(privacy) + "\n")
         f.write("=======================================\n")
-    # print("res",privacy)
+
     first_bracket = privacy.find("[")   
     last_bracket = privacy.rfind("]")
     privacy = privacy[first_bracket:last_bracket+1]
-    # print(privacy)
+
     # text to json
-    print("============== privacy ==============\n")
-    print(privacy)
-    print("=====================================\n")
     try:
         privacy = json.loads(privacy)
     except:
         traceback.print_exc()
-        ipdb.set_trace()
+        privacy = {}
+        pass
 
+    save_state_with_timestamp("getprivacy")  # Save the state before processing
+    print(" ============== PRIVACY ============== \n")
+    print(privacy)
+    print(" ============== PRIVACY ============== \n")
     return jsonify({'privacy': privacy})
 
 @app.route('/delete_memory', methods=['POST'])
@@ -586,26 +661,31 @@ def generate_response(history):
     
     return response.choices[0].message.content.strip()
 
-def get_user_only_chat_history_as_string(chat_name):
+def get_user_only_chat_history(chat_name):
     chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
     user_only_history = []
 
-    if os.path.exists(chat_file):
+    if (os.path.exists(chat_file)):
         with open(chat_file, 'r') as f:
             chat_history = f.readlines()
-            for line in chat_history:
+            for i, line in enumerate(chat_history):
                 chat_entry = json.loads(line.strip())
                 if chat_entry['role'] == 'user':
-                    user_only_history.append(chat_entry['message'])
+                    # Append each message as a dictionary with a unique ID
+                    user_only_history.append({
+                        "id": chat_entry['id'],  # Unique ID for each user input
+                        "message": chat_entry['message']
+                    })
 
-    # 将用户输入列表转换为用逗号分隔的字符串，并加上方括号
-    user_only_history_str = f"[{', '.join(user_only_history)}]"
-
-    return user_only_history_str
+    return user_only_history
 
 def save_message_to_file(chat_file, role, message):
     with open(chat_file, 'a') as f:
-        message_entry = {'role': role, 'message': message}
+        message_entry = {
+            'id': generate_unique_id(),
+            'role': role,
+            'message': message
+        }
         f.write(json.dumps(message_entry) + '\n')
 
 def get_current_chat_history(chat_name):
@@ -624,6 +704,7 @@ def get_current_chat_history(chat_name):
         })
     return new_chat_history
 
+# deprecated
 def read_chat_history(user_id):
     chat_history = []
     chat_files = [f for f in os.listdir(CHAT_DATA_DIR) if f.startswith(f"{user_id}__")]
@@ -668,26 +749,148 @@ def log_query(history, response):
 @login_required
 def submit_changes():
     data = request.json
-    message = data.get('message')
     changes = data.get('changes')
-    ipdb.set_trace()
-    
-    # Example processing logic
+
+    save_state_with_timestamp("submitchanges")  # Save the state before processing
+
+    # Load memory from file
+    with open(f"{current_user.username}_memory.json", "r") as f:
+        memory_list = json.loads(f.read())
+
+    # Load user chat history from the relevant chat file
+    chat_name = data.get('chat_name', '')
+    chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
+
+    # Read the chat history
+    if os.path.exists(chat_file):
+        with open(chat_file, 'r') as f:
+            chat_history = [json.loads(line.strip()) for line in f.readlines()]
+    else:
+        chat_history = []
+
+    # Process each change
     for change in changes:
-        id = change.get('id')
+        change_id = change.get('id')
         new_text = change.get('newText')
-        
-        # You should have a mapping to determine whether the ID is for memory or input
-        if id.startswith('input-'):
-            # Update the corresponding user input
-            # Example: update_user_input(id, new_text)
-            pass
-        elif id.startswith('memory-'):
-            # Update the corresponding memory
-            # Example: update_memory(id, new_text)
-            pass
+
+        # Update the corresponding memory based on the ID
+        for memory_item in memory_list:
+            if memory_item['id'] == change_id:
+                memory_item['memoryText'] = new_text
+                break
+
+        # Update the corresponding user input based on the ID
+        for chat_entry in chat_history:
+            if chat_entry.get('id') == change_id:
+                chat_entry['message'] = new_text
+                break
+
+    # Save the updated memory back to the memory file
+    with open(f"{current_user.username}_memory.json", "w", encoding='utf-8') as f:
+        f.write(json.dumps(memory_list, ensure_ascii=False, indent=4))
+
+    # Save the updated chat history back to the chat file
+    with open(chat_file, 'w', encoding='utf-8') as f:
+        for chat_entry in chat_history:
+            f.write(json.dumps(chat_entry) + '\n')
+
+    # Trigger a re-render on the frontend (e.g., by returning the updated chat history and memory)
+    updated_data = {
+        'status': 'success',
+        'updated_memory': memory_list,
+        'updated_chat_history': chat_history
+    }
+
+    return jsonify(updated_data)
+
+def merge_memories(existing_memories, new_memories):
+    """
+    Merge two lists of memory dictionaries, removing duplicates based on the 'memoryText' field.
+    """
+    merged_memories = existing_memories.copy()  # Start with the existing memories
+    memory_texts = {mem["memoryText"] for mem in existing_memories}  # Track the memoryText we've seen
     
-    return jsonify({'status': 'success'})
+    for mem in new_memories:
+        if mem["memoryText"] not in memory_texts:
+            merged_memories.append(mem)
+            memory_texts.add(mem["memoryText"])  # Ensure this memoryText is marked as seen
+    
+    save_state_with_timestamp("submitchanges")  # Save the state before processing
+
+    return merged_memories
+
+def save_state_with_timestamp(state_name):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    state_dir = os.path.join(CHAT_DATA_DIR, current_user.username, "state_logs")
+
+    if not os.path.exists(state_dir):
+        os.makedirs(state_dir)
+
+    # Load memory
+    with open(f"{current_user.username}_memory.json", "r") as f:
+        memory = json.loads(f.read())
+
+    # Save memory with timestamp
+    memory_filename = os.path.join(state_dir, f"memory_{state_name}_{timestamp}.json")
+    with open(memory_filename, "w", encoding='utf-8') as f:
+        json.dump(memory, f, ensure_ascii=False, indent=4)
+
+    # Save chat history with timestamp for all chats
+    for chat_name in [f.split('__')[1].split(".")[0] for f in os.listdir(CHAT_DATA_DIR) if f.startswith(f"{current_user.username}__")]:
+        chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{chat_name}.txt')
+        if os.path.exists(chat_file):
+            try:
+                with open(chat_file, 'r') as f:
+                    chat_history = [json.loads(line.strip()) for line in f.readlines()]
+                chat_filename = os.path.join(state_dir, f"chat_{chat_name}_{state_name}_{timestamp}.json")
+                with open(chat_filename, "w", encoding='utf-8') as f:
+                    json.dump(chat_history, f, ensure_ascii=False, indent=4)
+            except:
+                traceback.print_exc()
+                pass
+
+@app.route('/api/messages/update', methods=['POST'])
+@login_required
+def update_message():
+    data = request.json
+    message_id = data.get('id')
+    new_text = data.get('text').strip("Save Cancel").strip("\n")
+    selected_chat = data.get('chat_name')  # 从前端获取 selected_chat
+    print(selected_chat, message_id, new_text)
+    if not message_id or not new_text or not selected_chat:
+        return jsonify({'status': 'failure', 'message': 'Invalid data.'}), 400
+
+    # 假设消息是存储在用户特定聊天记录的文本文件中
+    chat_file = os.path.join(CHAT_DATA_DIR, f'{current_user.username}__{selected_chat}.txt')
+    
+    if not os.path.exists(chat_file):
+        return jsonify({'status': 'failure', 'message': 'Chat file not found.'}), 404
+
+    # 读取现有的对话记录
+    with open(chat_file, 'r') as f:
+        conversations = f.readlines()
+    message_id = eval(message_id)
+    # print(message_id, len
+    if message_id > len(conversations):
+        return jsonify({'status': 'failure', 'message': 'Invalid message ID.'}), 400
+
+    # 更新指定的消息
+    # role, _ = conversations[message_id-1].split(': ', 1)
+    # ipdb.set_trace()
+    # print(role, new_text)
+    # ipdb.set_trace()
+    # updated_message = f"{role}: {new_text}\n"
+    print(conversations[message_id-1])
+    json_record = json.loads(conversations[message_id-1])
+    json_record['message'] = new_text
+    conversations[message_id-1] = json.dumps(json_record) + "\n"
+    print(conversations[message_id-1])
+    # 保存更新后的对话记录
+    with open(chat_file, 'w') as f:
+        f.writelines(conversations)
+
+    return jsonify({'status': 'success', 'message': 'Message updated successfully.'})
+
 
 if __name__ == '__main__':
     if not os.path.exists(USER_DATA_FILE):

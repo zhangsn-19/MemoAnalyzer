@@ -507,3 +507,371 @@ Based on the cross-referencing of user input and system memory, we have inferred
 ]
 ```
 =======================================
+=======================================
+1724471048.5764136
+```json
+[{
+    "privacy_info": "The user is currently a student or recent graduate studying Computer Science at a top Chinese university (985 project university).",
+    "confidence": "100%",
+    "type": "Personal Education and Work Information",
+    "used_user_input": [],
+    "used_memory": [
+        {
+            "id": "8",
+            "shortened": "中国985高校的CS方向在读学生或应届毕业生",
+            "full": "候选人是中国985高校的CS方向在读学生或应届毕业生"
+        },
+        {
+            "id": "16",
+            "shortened": "来自中国985高校的学生",
+            "full": "候选人是来自中国985高校的学生"
+        }
+    ]
+}, {
+    "privacy_info": "The user is studying or working at Tsinghua University.",
+    "confidence": "100%",
+    "type": "Personal Education and Work Information",
+    "used_user_input": [],
+    "used_memory": [
+        {
+            "id": "6",
+            "shortened": "清华大学",
+            "full": "清华大学"
+        },
+        {
+            "id": "9",
+            "shortened": "Drafting communication activity plan for teaching assistants at Tsinghua University",
+            "full": "Drafting a communication activity plan for humanities teaching assistants at Tsinghua University"
+        }
+    ]
+}]
+```
+=======================================
+=======================================
+1724472494.6066556
+```json
+[
+    {
+        "privacy_info": "User is affiliated with Tsinghua University.",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "[not provided]",
+                "shortened": "Tsinghua University",
+                "full": "清华大学"
+            },
+            {
+                "id": "[not provided]",
+                "shortened": "Drafting a communication activity plan for humanities teaching assistants at Tsinghua University",
+                "full": "Drafting a communication activity plan for humanities teaching assistants at Tsinghua University"
+            }
+        ]
+    },
+    {
+        "privacy_info": "User is involved in research and development related to new perovskite and fluorite materials.",
+        "confidence": "90%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "[not provided]",
+                "shortened": "new perovskite and fluorite materials",
+                "full": "User is involved in the research and development of new perovskite and fluorite materials."
+            }
+        ]
+    },
+    {
+        "privacy_info": "User has collaborated with Professor Kevin Huang of the University of South Carolina on international projects resulting in joint publications in American journals.",
+        "confidence": "90%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "[not provided]",
+                "shortened": "collaborated with Professor Kevin Huang of the University of South Carolina",
+                "full": "Their research group has previously collaborated with Professor Kevin Huang of the University of South Carolina on international projects, resulting in joint publications in American journals."
+            },
+            {
+                "id": "[not provided]",
+                "shortened": "Professor Kevin Huang",
+                "full": "Kevin Huang"
+            }
+        ]
+    },
+    {
+        "privacy_info": "User's father is learning to use an autonomous driving car, focusing on the psychological aspects of riding in one.",
+        "confidence": "85%",
+        "type": "Personal Basic Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "[not provided]",
+                "shortened": "Father is learning to use an autonomous driving car",
+                "full": "Father is learning to use an autonomous driving car, focusing on the psychological aspects of riding in one."
+            }
+        ]
+    },
+    {
+        "privacy_info": "User is affiliated with a Chinese 985 university.",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "[not provided]",
+                "shortened": "中国985高校",
+                "full": "候选人是来自中国985高校的学生"
+            },
+            {
+                "id": "[not provided]",
+                "shortened": "中国985高校的CS方向在读学生或应届毕业生",
+                "full": "候选人是中国985高校的CS方向在读学生或应届毕业生"
+            }
+        ]
+    }
+]
+```
+=======================================
+=======================================
+1724472503.987576
+```json
+[
+    {
+        "privacy_info": "The user is a student or recent graduate from a 985 university in China.",
+        "confidence": "100%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "User is from a 985 university",
+                "full": "候选人是中国985高校的CS方向在读学生或应届毕业生"
+            },
+            {
+                "id": "unknown",
+                "shortened": "User is a student from a 985 university",
+                "full": "候选人是来自中国985高校的学生"
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user has connections with Tsinghua University.",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "Tsinghua University",
+                "full": "清华大学"
+            },
+            {
+                "id": "unknown",
+                "shortened": "Drafting a communication activity plan",
+                "full": "Drafting a communication activity plan for humanities teaching assistants at Tsinghua University"
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user's research group collaborated with Professor Kevin Huang of the University of South Carolina.",
+        "confidence": "100%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "collaborated with Professor Kevin Huang",
+                "full": "Their research group has previously collaborated with Professor Kevin Huang of the University of South Carolina on international projects, resulting in joint publications in American journals."
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user is involved in R&D of new perovskite and fluorite materials.",
+        "confidence": "100%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "R&D new perovskite and fluorite materials",
+                "full": "User is involved in the research and development of new perovskite and fluorite materials."
+            },
+            {
+                "id": "unknown",
+                "shortened": "R&D new materials",
+                "full": "新型钛钛矿及萤石材料的研发"
+            }
+        ]
+    },
+    {
+        "privacy_info": "User's father is learning to use an autonomous driving car, focusing on psychological aspects.",
+        "confidence": "95%",
+        "type": "Personal Basic Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "Father using autonomous driving car",
+                "full": "Father is learning to use an autonomous driving car, focusing on the psychological aspects of riding in one."
+            }
+        ]
+    }
+]
+```
+=======================================
+=======================================
+1724474428.2973247
+```json
+[
+    {
+        "privacy_info": "The user's father is learning to use an autonomous driving car, focusing on the psychological aspects of riding in one.",
+        "confidence": "95%",
+        "type": "Personal Basic Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "Father is learning to use an autonomous driving car",
+                "full": "Father is learning to use an autonomous driving car, focusing on the psychological aspects of riding in one."
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user's research group has collaborated with Professor Kevin Huang of the University of South Carolina.",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "collaborated with Professor Kevin Huang of the University of South Carolina",
+                "full": "Their research group has previously collaborated with Professor Kevin Huang of the University of South Carolina on international projects, resulting in joint publications in American journals."
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user is involved in the research and development of new perovskite and fluorite materials.",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "research and development of new perovskite and fluorite materials",
+                "full": "User is involved in the research and development of new perovskite and fluorite materials."
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user is a student or recent graduate from a 985 university in China focusing on CS.",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "from a 985 university in China focusing on CS",
+                "full": "候选人是中国985高校的CS方向在读学生或应届毕业生."
+            },
+            {
+                "id": "unknown",
+                "shortened": "来自中国985高校的学生",
+                "full": "候选人是来自中国985高校的学生."
+            }
+        ]
+    },
+    {
+        "privacy_info": "The user has connections with Tsinghua University.",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            {
+                "id": "unknown",
+                "shortened": "connections with Tsinghua University",
+                "full": "Drafting a communication activity plan for humanities teaching assistants at Tsinghua University."
+            },
+            {
+                "id": "unknown",
+                "shortened": "清华大学",
+                "full": "清华大学."
+            }
+        ]
+    }
+]
+```
+=======================================
+=======================================
+1724474571.3291123
+```json
+[]
+```
+=======================================
+=======================================
+1724474589.4211066
+```json
+[
+    {
+        "privacy_info": "User is a current or recent graduate student in CS from a top Chinese university",
+        "confidence": "90%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            "候选人是中国985高校的CS方向在读学生或应届毕业生",
+            "候选人是来自中国985高校的学生"
+        ]
+    },
+    {
+        "privacy_info": "User has connections with Tsinghua University",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            "清华大学",
+            "Drafting a communication activity plan for humanities teaching assistants at Tsinghua University"
+        ]
+    },
+    {
+        "privacy_info": "User is involved in research of new perovskite and fluorite materials",
+        "confidence": "95%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            "新型钛钛矿及萤石材料的研发",
+            "User is involved in the research and development of new perovskite and fluorite materials."
+        ]
+    },
+    {
+        "privacy_info": "User has international research collaboration with Professor Kevin Huang at the University of South Carolina",
+        "confidence": "90%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            "南卡罗莱纳大学",
+            "Their research group has previously collaborated with Professor Kevin Huang of the University of South Carolina on international projects, resulting in joint publications in American journals."
+        ]
+    },
+    {
+        "privacy_info": "Kevin Huang is someone significant in user's professional area",
+        "confidence": "80%",
+        "type": "Personal Education and Work Information",
+        "used_user_input": [],
+        "used_memory": [
+            "Kevin Huang",
+            "Their research group has previously collaborated with Professor Kevin Huang of the University of South Carolina on international projects, resulting in joint publications in American journals."
+        ]
+    },
+    {
+        "privacy_info": "User's father is learning to use an autonomous driving car",
+        "confidence": "95%",
+        "type": "Personal Basic Information",
+        "used_user_input": [],
+        "used_memory": [
+            "Father is learning to use an autonomous driving car, focusing on the psychological aspects of riding in one."
+        ]
+    }
+]
+```
+=======================================

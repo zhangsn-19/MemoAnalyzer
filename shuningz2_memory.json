@@ -40,5 +40,9 @@
     "The text involves measuring perceived gain and loss in typical take-over tasks with different safety risks, referencing the work by Sheng in 2021.",
     "Study 1 involved measuring perceived gains and losses across three typical take-over tasks with varying safety risks: Route Selection~\\cite{sheng2021trust}.",
     "Referencing Route Selection study by Sheng et al. (2021).",
-    "\\cite{sheng2021trust}"
+    "\\cite{sheng2021trust}",
+    {
+        "id": "f0a3bae1-ff77-4e58-bd6e-8816a1905736",
+        "memoryText": "你好"
+    }
 ]
